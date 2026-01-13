@@ -5,6 +5,32 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum Weekday {
+  MON
+  TUE
+  WED
+  THU
+  FRI
+  SAT
+  SUN
+}
+
+//les horraires
+model OpeningHours {
+  id        String  @id @default(cuid())
+  cinemaId  String
+  day       Weekday
+  openTime  String
+  closeTime String
+  isClosed  Boolean @default(false)
+
+  cinema    Cinema  @relation(fields: [cinemaId], references: [id], onDelete: Cascade)
+
+  @@unique([cinemaId, day])
+  @@index([cinemaId])
+}
+
 //le cinema
 model Cinema {
   id        String @id @default(cuid())
@@ -12,17 +38,58 @@ model Cinema {
   city      String?
 
   rooms     Room[]
+  openingHours OpeningHours[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
 //la salle
 model Room {
   id        String @id @default(cuid())
   cinemaId  String
   name      String
   cinema    Cinema @relation(fields: [cinemaId], references: [id])
+  seats     Seat[]
+  capacitySeat  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  screenings Screening[]
+}
+
+//la place
+model Seat {
+  id        String @id @default(cuid())
+  roomId    String
+  row       String
+  number    Int
+  room      Room @relation(fields: [roomId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([roomId, row, number])
+}
+
+//la seance (je me sens seule tout à coup)
+model Screening {
+  id          String   @id @default(cuid())
+  roomId      String
+  movieId     String
+  startsAt    DateTime
+  endsAt      DateTime
+  extraMinutes Int? @default(0) // un temps pour les pubs + entracte
+  //999.99 euros c'est resonnalbe comme prix
+  basePrice   Decimal  @db.Decimal(5, 2)//pour eviter un float trop long on definit le nombre de chiffre avant et apres la virgule 
+  currency    String   @default("EUR")
+
+  room        Room     @relation(fields: [roomId], references: [id])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([roomId, startsAt])
+  @@index([movieId])
+  @@index([startsAt])
 }
