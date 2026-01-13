@@ -72,24 +72,38 @@ model Seat {
   @@unique([roomId, row, number])
 }
 
-//la seance (je me sens seule tout à coup)
 model Screening {
-  id          String   @id @default(cuid())
-  roomId      String
-  movieId     String
-  startsAt    DateTime
-  endsAt      DateTime
-  extraMinutes Int? @default(0) // un temps pour les pubs + entracte
+
+  id           String   @id @default(cuid())
+  roomId       String
+  movieId      String
+  startsAt     DateTime
+  endsAt       DateTime
+  extraMinutes Int?     @default(0) // un temps pour les pubs + entracte
   //999.99 euros c'est resonnalbe comme prix
-  basePrice   Decimal  @db.Decimal(5, 2)//pour eviter un float trop long on definit le nombre de chiffre avant et apres la virgule 
-  currency    String   @default("EUR")
+  basePrice    Decimal  @db.Decimal(5, 2)//pour eviter un float trop long on definit le nombre de chiffre avant et apres la virgule 
+  currency     String   @default("EUR")
 
-  room        Room     @relation(fields: [roomId], references: [id])
+  room         Room     @relation(fields: [roomId], references: [id])
+  movie        Movie    @relation(fields: [movieId], references: [id])
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   @@unique([roomId, startsAt])
   @@index([movieId])
   @@index([startsAt])
+}
+
+//le film (obligation de refaire le model meme si on peux faire la relation entre les deux bdd, c'est bizarre mais bon ...)
+model Movie {
+  id              String   @id
+  title           String
+  durationMinutes Int
+  updatedAtSource DateTime? // pour savoir quand on a mis a jour le film depuis la source externe
+
+  screenings      Screening[] // oui c'est bizarre mais prisma veut un inverse sinon il panique
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
