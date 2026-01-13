@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+//le cinema
+model Cinema {
+  id        String @id @default(cuid())
+  name      String
+  city      String?
+
+  rooms     Room[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+//la salle
+model Room {
+  id        String @id @default(cuid())
+  cinemaId  String
+  name      String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
