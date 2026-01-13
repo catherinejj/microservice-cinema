@@ -95,7 +95,8 @@ model Screening {
   @@index([startsAt])
 }
 
-//le film (obligation de refaire le model meme si on peux faire la relation entre les deux bdd, c'est bizarre mais bon ...)
+//le film
+//(obligation de refaire le model meme si on peut faire la relation entre les deux bdd, c'est bizarre mais bon ...)
 model Movie {
   id              String   @id
   title           String
