@@ -21,6 +21,7 @@ model Room {
   id        String @id @default(cuid())
   cinemaId  String
   name      String
+  cinema    Cinema @relation(fields: [cinemaId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
