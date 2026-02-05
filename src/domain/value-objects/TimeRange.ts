@@ -1,21 +1,22 @@
 export class TimeRange {
-  private readonly _start: Date;
-  private readonly _end: Date;
+  private constructor(
+    private readonly _start: Date,
+    private readonly _end: Date,
+  ) {}
 
-  private constructor(start: Date, end: Date) {
+  static of(start: Date, end: Date): TimeRange {
     if (!(start instanceof Date) || isNaN(start.getTime())) {
-      throw new Error("TimeRange: start must be a valid Date");
+      throw new Error("TimeRange: invalid start");
     }
     if (!(end instanceof Date) || isNaN(end.getTime())) {
-      throw new Error("TimeRange: end must be a valid Date");
+      throw new Error("TimeRange: invalid end");
     }
     if (end <= start) {
       throw new Error("TimeRange: end must be after start");
     }
-
-    this._start = new Date(start);
-    this._end = new Date(end);
+    return new TimeRange(start, end);
   }
+
 
   // ---------- Factory ----------
   static create(start: Date, end: Date): TimeRange {

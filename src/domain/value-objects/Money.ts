@@ -14,7 +14,7 @@ export class Money {
     }
 
     this._cents = cents;
-    this._currency = currency.toUpperCase();
+    this._currency = currency.trim().toUpperCase();
   }
 
   // ---------- Factories ----------
@@ -23,6 +23,9 @@ export class Money {
   }
 
   static fromDecimal(amount: number, currency = "EUR"): Money {
+    if (!Number.isFinite(amount) || amount < 0) {
+      throw new Error("Money: amount must be a finite number >= 0");
+    }
     const cents = Math.round(amount * 100);
     return new Money(cents, currency);
   }
@@ -60,10 +63,7 @@ export class Money {
   }
 
   equals(other: Money): boolean {
-    return (
-      this._cents === other._cents &&
-      this._currency === other._currency
-    );
+    return this._cents === other._cents && this._currency === other._currency;
   }
 
   // ---------- Helpers ----------
