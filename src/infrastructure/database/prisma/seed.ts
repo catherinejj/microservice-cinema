@@ -11,25 +11,63 @@ const prisma = new PrismaClient({ adapter } as any);
 
 async function main() {
   const movies = [
-    { id: "movie_1", title: "Alien", durationMinutes: 117 },
-    { id: "movie_2", title: "Blade Runner", durationMinutes: 117 },
-    { id: "movie_3", title: "Spirited Away", durationMinutes: 125 },
-  ];
+  {
+    id: "movie_1",
+    title: "Alien",
+    description: "Un équipage spatial reçoit un signal de détresse et découvre une menace mortelle.",
+    duration: 117,
+    coverImage: undefined,
+    category: "Sci-Fi",
+    releaseDate: new Date("1979-05-25"),
+    rating: 8.5,
+  },
+  {
+    id: "movie_2",
+    title: "Blade Runner",
+    description: "Un chasseur de réplicants traque des androïdes dans un futur dystopique.",
+    duration: 117,
+    coverImage: undefined,
+    category: "Sci-Fi",
+    releaseDate: new Date("1982-06-25"),
+    rating: 8.1,
+  },
+  {
+    id: "movie_3",
+    title: "Spirited Away",
+    description: "Une jeune fille se retrouve dans un monde spirituel et doit sauver ses parents.",
+    duration: 125,
+    coverImage: undefined,
+    category: "Animation",
+    releaseDate: new Date("2001-07-20"),
+    rating: 8.6,
+  },
+] as const;
 
   for (const m of movies) {
-    await prisma.movie.upsert({
-      where: { id: m.id },
-      update: {
-        title: m.title,
-        durationMinutes: m.durationMinutes,
-      },
-      create: {
-        id: m.id,
-        title: m.title,
-        durationMinutes: m.durationMinutes,
-      },
-    });
-  }
+  await prisma.movie.upsert({
+    where: { id: m.id },
+    update: {
+      title: m.title,
+      description: m.description,
+      duration: m.duration,
+      coverImage: m.coverImage,
+      category: m.category,
+      releaseDate: m.releaseDate,
+      rating: m.rating,
+    },
+    create: {
+      id: m.id,
+      title: m.title,
+      description: m.description,
+      duration: m.duration,
+      coverImage: m.coverImage,
+      category: m.category,
+      releaseDate: m.releaseDate,
+      rating: m.rating,
+    },
+  });
+}
+const movieById = new Map(movies.map((m) => [m.id, m]));
 
   const cinema = await prisma.cinema.upsert({
     where: { id: "cinema_1" },
@@ -106,64 +144,67 @@ async function main() {
   function at(dayOffset: number, hour: number, minute: number) {
     return new Date(baseDay.getTime() + dayOffset * 24 * 60 * 60 * 1000 + (hour * 60 + minute) * 60 * 1000);
   }
+  function addMinutes(date: Date, minutes: number) {
+  return new Date(date.getTime() + minutes * 60_000);}
 
   const screenings = [
-    {
-      id: "scr_1",
-      roomId: room1.id,
-      movieId: "movie_1",
-      startsAt: at(0, 14, 0),
-      endsAt: at(0, 16, 10),
-      extraMinutes: 10,
-      basePrice: "9.50",
-      currency: "EUR",
-    },
-    {
-      id: "scr_2",
-      roomId: room1.id,
-      movieId: "movie_2",
-      startsAt: at(0, 18, 0),
-      endsAt: at(0, 20, 10),
-      extraMinutes: 10,
-      basePrice: "11.00",
-      currency: "EUR",
-    },
-    {
-      id: "scr_3",
-      roomId: room2.id,
-      movieId: "movie_3",
-      startsAt: at(1, 16, 0),
-      endsAt: at(1, 18, 15),
-      extraMinutes: 10,
-      basePrice: "8.00",
-      currency: "EUR",
-    },
-  ];
+  {
+    id: "scr_1",
+    roomId: room1.id,
+    movieId: "movie_1",
+    startsAt: at(0, 14, 0),
+    extraMinutes: 10,
+    basePrice: "9.50",
+    currency: "EUR",
+  },
+  {
+    id: "scr_2",
+    roomId: room1.id,
+    movieId: "movie_2",
+    startsAt: at(0, 18, 0),
+    extraMinutes: 10,
+    basePrice: "11.00",
+    currency: "EUR",
+  },
+  {
+    id: "scr_3",
+    roomId: room2.id,
+    movieId: "movie_3",
+    startsAt: at(1, 16, 0),
+    extraMinutes: 10,
+    basePrice: "8.00",
+    currency: "EUR",
+  },
+] as const;
+for (const s of screenings) {
+  const movie = movieById.get(s.movieId);
+  if (!movie) throw new Error(`Movie not found for screening ${s.id}: ${s.movieId}`);
 
-  for (const s of screenings) {
-    await prisma.screening.upsert({
-      where: { id: s.id },
-      update: {
-        roomId: s.roomId,
-        movieId: s.movieId,
-        startsAt: s.startsAt,
-        endsAt: s.endsAt,
-        extraMinutes: s.extraMinutes,
-        basePrice: s.basePrice as any,
-        currency: s.currency,
-      },
-      create: {
-        id: s.id,
-        roomId: s.roomId,
-        movieId: s.movieId,
-        startsAt: s.startsAt,
-        endsAt: s.endsAt,
-        extraMinutes: s.extraMinutes,
-        basePrice: s.basePrice as any,
-        currency: s.currency,
-      },
-    });
-  }
+ const endsAt = addMinutes(s.startsAt, movie.duration + (s.extraMinutes ?? 0));
+
+  await prisma.screening.upsert({
+    where: { id: s.id },
+    update: {
+      roomId: s.roomId,
+      movieId: s.movieId,
+      startsAt: s.startsAt,
+      endsAt,
+      extraMinutes: s.extraMinutes,
+      basePrice: s.basePrice as any,
+      currency: s.currency,
+    },
+    create: {
+      id: s.id,
+      roomId: s.roomId,
+      movieId: s.movieId,
+      startsAt: s.startsAt,
+      endsAt,
+      extraMinutes: s.extraMinutes,
+      basePrice: s.basePrice as any,
+      currency: s.currency,
+    },
+  });
+}
 
   console.log("✅ Seed terminé :", {
     movies: movies.length,

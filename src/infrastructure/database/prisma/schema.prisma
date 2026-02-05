@@ -98,13 +98,18 @@ model Screening {
 //le film
 //(obligation de refaire le model meme si on peut faire la relation entre les deux bdd, c'est bizarre mais bon ...)
 model Movie {
-  id              String   @id
-  title           String
-  durationMinutes Int
-  updatedAtSource DateTime? // pour savoir quand on a mis a jour le film depuis la source externe
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  duration    Int
+  coverImage  String?
+  category    String
+  releaseDate DateTime
+  rating      Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  screenings      Screening[] // oui c'est bizarre mais prisma veut un inverse sinon il panique
+  screenings  Screening[]
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  @@unique([title, releaseDate])
 }
