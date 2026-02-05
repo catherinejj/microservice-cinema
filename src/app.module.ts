@@ -1,15 +1,19 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { PrismaModule } from './prisma/prisma.module';
-
-import { MoviesModule } from './presentation/controllers/movies/movies.module';
-import { CinemasModule } from './presentation/controllers/cinemas/cinemas.module';
-import { ScreeningsModule } from './presentation/controllers/screenings/screenings.module';
+import { CinemasModule } from './modules/cinemas/cinemas.module';
+import { MoviesModule } from './modules/movies/movies.module';
+import { RoomsModule } from './modules/rooms/rooms.module';
+import { SeatsModule } from './modules/seats/seats.module';
+import { ScreeningsModule } from './modules/screenings/screenings.module';
+import { OpeningHoursModule } from './modules/opening-hours/opening-hours.module';
 
 @Module({
-  imports: [PrismaModule, MoviesModule, CinemasModule, ScreeningsModule],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    CinemasModule,
+    MoviesModule,
+    RoomsModule,
+    SeatsModule,
+    ScreeningsModule,
+    OpeningHoursModule,
+  ],
 })
 export class AppModule {}
