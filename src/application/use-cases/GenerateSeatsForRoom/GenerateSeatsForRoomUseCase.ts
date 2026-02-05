@@ -29,7 +29,6 @@ export class GenerateSeatsForRoomUseCase {
     for (const row of input.rows) {
       for (let number = 1; number <= input.seatsPerRow; number++) {
         const seat = Seat.create({
-          id: "",
           roomId: input.roomId,
           row,
           number,

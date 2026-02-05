@@ -9,24 +9,21 @@ import { PrismaService } from "../../../prisma/prisma.service";
 export class PrismaScreeningRepository implements IScreeningRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(screening: Screening): Promise<void> {
-    await this.prisma.screening.create({
-      data: {
-        roomId: screening.roomId,
-        movieId: screening.movieId,
+  async create(screening: Screening): Promise<string> {
+  const created = await this.prisma.screening.create({
+    data: {
+      movieId: screening.movieId,
+      roomId: screening.roomId,
+      startsAt: screening.slot.start,
+      endsAt: screening.slot.end,
+      basePrice: screening.price.amount, // ou screening.price.cents selon ton mapping Prisma
+      currency: screening.price.currency,
+    },
+    select: { id: true },
+  });
 
-        startsAt: screening.slot.start,
-        endsAt: screening.slot.end,
-
-        // entity ne stocke pas extraMinutes => on met 0 par défaut
-        extraMinutes: 0,
-
-        // Prisma Decimal: on stocke le montant en euros (ex: 9.50)
-        basePrice: screening.price.amount as any,
-        currency: screening.price.currency,
-      },
-    });
-  }
+  return created.id;
+}
 
   async update(screening: Screening): Promise<void> {
     await this.prisma.screening.update({

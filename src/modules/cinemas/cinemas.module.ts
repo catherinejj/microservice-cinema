@@ -5,24 +5,24 @@ import { CinemaController } from "../../presentation/controllers/CinemaControlle
 
 import { CreateCinemaUseCase } from "../../application/use-cases/CreateCinema/CreateCinemaUseCase";
 import { AddRoomToCinemaUseCase } from "../../application/use-cases/AddRoomToCinema/AddRoomToCinemaUseCase";
+import { ListCinemasUseCase } from "../../application/use-cases/ListCinemas/ListCinemasUseCase";
+import { GetCinemaByIdUseCase } from "../../application/use-cases/GetCinemaById/GetCinemaByIdUseCase"; // ✅ AJOUTE
 
 import { PrismaCinemaRepository } from "../../infrastructure/database/repositories/PrismaCinemaRepository";
 import { PrismaRoomRepository } from "../../infrastructure/database/repositories/PrismaRoomRepository";
-import { ListCinemasUseCase } from "../../application/use-cases/ListCinemas/ListCinemasUseCase";
 
 @Module({
   controllers: [CinemaController],
   providers: [
     PrismaService,
 
-    // Tokens DI
     { provide: "ICinemaRepository", useClass: PrismaCinemaRepository },
     { provide: "IRoomRepository", useClass: PrismaRoomRepository },
 
-    // Use cases
     CreateCinemaUseCase,
     AddRoomToCinemaUseCase,
     ListCinemasUseCase,
+    GetCinemaByIdUseCase,
   ],
 })
 export class CinemasModule {}

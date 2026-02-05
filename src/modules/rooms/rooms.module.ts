@@ -1,4 +1,28 @@
-import { Module } from '@nestjs/common';
+import { Module } from "@nestjs/common";
 
-@Module({})
+import { PrismaService } from "../../prisma/prisma.service";
+
+import { RoomController } from "../../presentation/controllers/RoomController";
+
+import { PrismaRoomRepository } from "../../infrastructure/database/repositories/PrismaRoomRepository";
+import { PrismaCinemaRepository } from "../../infrastructure/database/repositories/PrismaCinemaRepository";
+
+import { CreateRoomUseCase } from "../../application/use-cases/CreateRoom/CreateRoomUseCase";
+import { ListRoomsByCinemaUseCase } from "../../application/use-cases/ListRoomsByCinema/ListRoomsByCinemaUseCase";
+
+@Module({
+  controllers: [RoomController],
+  providers: [
+    PrismaService,
+
+    CreateRoomUseCase,
+    ListRoomsByCinemaUseCase,
+
+    PrismaRoomRepository,
+    PrismaCinemaRepository,
+
+    { provide: "IRoomRepository", useClass: PrismaRoomRepository },
+    { provide: "ICinemaRepository", useClass: PrismaCinemaRepository },
+  ],
+})
 export class RoomsModule {}

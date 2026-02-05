@@ -1,5 +1,29 @@
 # Changelog
 
+## v0.4.0
+- Controllers layer implemented:
+  - CinemaController (create, list, getById)
+  - RoomController (create, list by cinema)
+  - SeatController (generate, list by room, getById)
+  - ScreeningController (create, list by room)
+  - OpeningHoursController (create, list by cinema)
+
+- New use-cases added:
+  - GetCinemaById
+  - GetOpeningHoursByCinema
+  - ListSeatsByRoom
+  - GetSeatById
+  - ListRoomsByCinema
+  - ListScreeningsByRoom
+
+- Refactor:
+  - Prisma cuid IDs fully integrated
+  - Clean Architecture reinforced:
+    - DTOs in application layer
+    - DTOs in presentation layer
+  - Modules wired with dependency injection
+  - Swagger endpoints exposed
+
 ## v0.3.0
 - Add NestJS modules structure
 - Register modules in AppModule
