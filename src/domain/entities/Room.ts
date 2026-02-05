@@ -6,13 +6,15 @@ export interface RoomProps {
   cinemaId: string;
   name: string;
   capacitySeat: number;
-
   seats?: Seat[];
   screenings?: Screening[];
 }
 
+// Props pour créer AVANT persistance (sans id)
+export type NewRoomProps = Omit<RoomProps, "id">;
+
 export class Room {
-  private readonly _id: string;
+  private readonly _id?: string; // id optional tant que non persisté
   private readonly _cinemaId: string;
 
   private _name: string;
@@ -21,8 +23,7 @@ export class Room {
   private _seats: Seat[];
   private _screenings: Screening[];
 
-  private constructor(props: RoomProps) {
-    if (!props.id) throw new Error("Room: id is required");
+  private constructor(props: RoomProps | NewRoomProps) {
     if (!props.cinemaId) throw new Error("Room: cinemaId is required");
 
     if (!props.name || props.name.trim().length === 0) {
@@ -33,7 +34,7 @@ export class Room {
       throw new Error("Room: capacitySeat must be an integer > 0");
     }
 
-    this._id = props.id;
+    this._id = "id" in props ? props.id : undefined;
     this._cinemaId = props.cinemaId;
     this._name = props.name.trim();
     this._capacitySeat = props.capacitySeat;
@@ -42,13 +43,19 @@ export class Room {
     this._screenings = props.screenings ?? [];
   }
 
-  // ---------- Factory ----------
+  // ✅ création “new” (pas d'id)
+  static createNew(props: NewRoomProps): Room {
+    return new Room(props);
+  }
+
+  // ✅ rehydratation depuis la DB (id obligatoire)
   static create(props: RoomProps): Room {
+    if (!props.id) throw new Error("Room: id is required");
     return new Room(props);
   }
 
   // ---------- Getters ----------
-  get id(): string {
+  get id(): string | undefined {
     return this._id;
   }
 
@@ -84,19 +91,15 @@ export class Room {
     if (!Number.isInteger(newCapacity) || newCapacity <= 0) {
       throw new Error("Room: capacitySeat must be an integer > 0");
     }
-
-    // règle "soft" : si tu as déjà des sièges connus, la capacité ne doit pas être < nb sièges
     if (this._seats.length > 0 && newCapacity < this._seats.length) {
       throw new Error(
         `Room: capacitySeat (${newCapacity}) cannot be less than number of seats (${this._seats.length})`
       );
     }
-
     this._capacitySeat = newCapacity;
   }
 
   addSeat(seat: Seat): void {
-    // si tu veux, on pourra rendre ça plus strict après (row/number unique)
     if (this._seats.find((s) => s.id === seat.id)) {
       throw new Error(`Room: seat ${seat.id} already exists`);
     }

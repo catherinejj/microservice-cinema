@@ -13,8 +13,11 @@ export interface MovieProps {
   screenings?: Screening[];
 }
 
+// Pour créer un film "neuf" (avant DB) : pas d'id
+export type NewMovieProps = Omit<MovieProps, "id">;
+
 export class Movie {
-  private readonly _id: string;
+  private readonly _id?: string; // optional tant que pas persisté
 
   private _title: string;
   private _description: string;
@@ -26,9 +29,8 @@ export class Movie {
 
   private _screenings: Screening[];
 
-  private constructor(props: MovieProps) {
-    if (!props.id) throw new Error("Movie: id is required");
-
+  private constructor(props: MovieProps | NewMovieProps) {
+    // validations communes
     this.assertNonEmpty(props.title, "title");
     this.assertNonEmpty(props.description, "description");
     this.assertNonEmpty(props.category, "category");
@@ -38,12 +40,13 @@ export class Movie {
       throw new Error("Movie: duration must be an integer > 0 (minutes)");
     }
 
-    // échelle classique 0..10 (change si tu veux)
     if (typeof props.rating !== "number" || props.rating < 0 || props.rating > 10) {
       throw new Error("Movie: rating must be between 0 and 10");
     }
 
-    this._id = props.id;
+    // id (uniquement si rehydrate)
+    this._id = "id" in props ? props.id : undefined;
+
     this._title = props.title.trim();
     this._description = props.description.trim();
     this._duration = props.duration;
@@ -55,13 +58,19 @@ export class Movie {
     this._screenings = props.screenings ?? [];
   }
 
-  // ---------- Factory ----------
-  static create(props: MovieProps): Movie {
+  // ✅ Pour création via use-case (pas d'id)
+  static createNew(props: NewMovieProps): Movie {
+    return new Movie(props);
+  }
+
+  // ✅ Pour reconstruire depuis la DB (id obligatoire)
+  static rehydrate(props: MovieProps): Movie {
+    if (!props.id) throw new Error("Movie: id is required");
     return new Movie(props);
   }
 
   // ---------- Getters ----------
-  get id(): string {
+  get id(): string | undefined {
     return this._id;
   }
 
@@ -147,11 +156,6 @@ export class Movie {
   }
 
   addScreening(screening: Screening): void {
-    // optionnel : on garde une cohérence "soft"
-    // si ton Screening contient movieId, tu peux décommenter ce check :
-    // if (screening.movieId !== this._id) {
-    //   throw new Error("Movie: cannot add a screening for a different movie");
-    // }
     this._screenings.push(screening);
   }
 

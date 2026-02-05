@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { IMovieRepository } from "../../../domain/repositories";
+import type { IMovieRepository } from "../../../domain/repositories";
 import { ListMoviesInput, ListMoviesOutput } from "./ListMoviesDTO";
 import { ListMoviesValidator } from "./ListMoviesValidator";
 
