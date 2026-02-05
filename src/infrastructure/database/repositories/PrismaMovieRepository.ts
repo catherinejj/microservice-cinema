@@ -8,10 +8,9 @@ export class PrismaMovieRepository implements IMovieRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(movie: Movie): Promise<string> {
-
+    // Prisma génère l'id (@default(cuid())) => on n'envoie PAS d'id
     const created = await this.prisma.movie.create({
       data: {
-        ...(movie.id ? { id: movie.id } : {}),
         title: movie.title,
         description: movie.description,
         duration: movie.duration,
@@ -27,6 +26,7 @@ export class PrismaMovieRepository implements IMovieRepository {
   }
 
   async update(movie: Movie): Promise<void> {
+    // update => ici l'id DOIT exister (il vient de Prisma quand on a lu l'entité)
     if (!movie.id) {
       throw new Error("PrismaMovieRepository.update: movie.id is required");
     }
@@ -54,7 +54,6 @@ export class PrismaMovieRepository implements IMovieRepository {
     title: string,
     releaseDate: Date
   ): Promise<Movie | null> {
-
     const row = await this.prisma.movie.findUnique({
       where: {
         title_releaseDate: {
@@ -85,7 +84,9 @@ export class PrismaMovieRepository implements IMovieRepository {
     releaseDate: Date;
     rating: number;
   }): Movie {
-    return Movie.rehydrate({
+    // On utilise Movie.create() (id optionnel dans le domain)
+    // Ici, on passe l'id parce qu'il vient de Prisma.
+    return Movie.create({
       id: row.id,
       title: row.title,
       description: row.description,
@@ -94,7 +95,7 @@ export class PrismaMovieRepository implements IMovieRepository {
       category: row.category,
       releaseDate: row.releaseDate,
       rating: row.rating,
-      // screenings: [] // (optionnel) tu ne charges pas les screenings ici
+      // screenings: [] // optionnel
     });
   }
 }

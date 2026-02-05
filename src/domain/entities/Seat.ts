@@ -1,22 +1,26 @@
 export interface SeatProps {
-  id: string;
+  // Prisma génère l'id (@default(cuid())) => pas obligatoire à la création
+  id?: string;
+
   roomId: string;
   row: string;
   number: number;
 }
 
 export class Seat {
-  private readonly _id: string;
+  private readonly _id?: string; // optional tant que non persisté
   private readonly _roomId: string;
   private _row: string;
   private _number: number;
 
   private constructor(props: SeatProps) {
-    if (!props.id) throw new Error("Seat: id is required");
+    // IMPORTANT : on ne vérifie PAS props.id ici, car Prisma le crée à l'insert
     if (!props.roomId) throw new Error("Seat: roomId is required");
+
     if (!props.row || props.row.trim().length === 0) {
       throw new Error("Seat: row is required");
     }
+
     if (!Number.isInteger(props.number) || props.number <= 0) {
       throw new Error("Seat: number must be an integer > 0");
     }
@@ -31,7 +35,7 @@ export class Seat {
     return new Seat(props);
   }
 
-  get id(): string {
+  get id(): string | undefined {
     return this._id;
   }
 

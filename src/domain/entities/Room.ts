@@ -2,16 +2,15 @@ import { Screening } from "./Screening";
 import { Seat } from "./Seat";
 
 export interface RoomProps {
-  id: string;
+  // Prisma génère l'id (@default(cuid())) => pas obligatoire à la création
+  id?: string;
+
   cinemaId: string;
   name: string;
   capacitySeat: number;
   seats?: Seat[];
   screenings?: Screening[];
 }
-
-// Props pour créer AVANT persistance (sans id)
-export type NewRoomProps = Omit<RoomProps, "id">;
 
 export class Room {
   private readonly _id?: string; // id optional tant que non persisté
@@ -23,7 +22,7 @@ export class Room {
   private _seats: Seat[];
   private _screenings: Screening[];
 
-  private constructor(props: RoomProps | NewRoomProps) {
+  private constructor(props: RoomProps) {
     if (!props.cinemaId) throw new Error("Room: cinemaId is required");
 
     if (!props.name || props.name.trim().length === 0) {
@@ -34,7 +33,9 @@ export class Room {
       throw new Error("Room: capacitySeat must be an integer > 0");
     }
 
-    this._id = "id" in props ? props.id : undefined;
+    // IMPORTANT : on ne force PAS l'id ici, Prisma le crée à l'insert
+    this._id = props.id;
+
     this._cinemaId = props.cinemaId;
     this._name = props.name.trim();
     this._capacitySeat = props.capacitySeat;
@@ -43,14 +44,8 @@ export class Room {
     this._screenings = props.screenings ?? [];
   }
 
-  // ✅ création “new” (pas d'id)
-  static createNew(props: NewRoomProps): Room {
-    return new Room(props);
-  }
-
-  // ✅ rehydratation depuis la DB (id obligatoire)
+  // Factory unique (id optional)
   static create(props: RoomProps): Room {
-    if (!props.id) throw new Error("Room: id is required");
     return new Room(props);
   }
 
@@ -100,14 +95,16 @@ export class Room {
   }
 
   addSeat(seat: Seat): void {
-    if (this._seats.find((s) => s.id === seat.id)) {
+    // seat.id peut aussi être undefined si Seat pas encore persisté
+    if (seat.id && this._seats.find((s) => s.id === seat.id)) {
       throw new Error(`Room: seat ${seat.id} already exists`);
     }
     this._seats.push(seat);
   }
 
   addScreening(screening: Screening): void {
-    if (screening.roomId !== this._id) {
+    // Si la room n'est pas persistée, _id est undefined => on ne bloque pas inutilement
+    if (this._id && screening.roomId !== this._id) {
       throw new Error("Room: cannot add a screening for a different room");
     }
     this._screenings.push(screening);

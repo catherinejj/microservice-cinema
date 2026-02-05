@@ -3,7 +3,9 @@ import { TimeRange } from "../value-objects/TimeRange";
 import { Seat } from "./Seat";
 
 export interface ScreeningProps {
-  id: string;
+  // Prisma génère l'id (@default(cuid())) => pas obligatoire à la création
+  id?: string;
+
   movieId: string;
   roomId: string;
   slot: TimeRange;
@@ -11,14 +13,14 @@ export interface ScreeningProps {
 }
 
 export class Screening {
-  private readonly _id: string;
+  private readonly _id?: string; // optional tant que non persisté
   private readonly _movieId: string;
   private readonly _roomId: string;
   private _slot: TimeRange;
   private _price: Money;
 
   private constructor(props: ScreeningProps) {
-    if (!props.id) throw new Error("Screening: id is required");
+    // IMPORTANT : on ne vérifie PAS props.id ici, car Prisma le crée à l'insert
     if (!props.movieId) throw new Error("Screening: movieId is required");
     if (!props.roomId) throw new Error("Screening: roomId is required");
 
@@ -35,7 +37,7 @@ export class Screening {
   }
 
   // ---------- Getters ----------
-  get id(): string {
+  get id(): string | undefined {
     return this._id;
   }
 
@@ -70,7 +72,8 @@ export class Screening {
   reschedule(newSlot: TimeRange) {
     this._slot = newSlot;
   }
-  //Est ce que le screening se déroule dans la même salle que le siège donné en paramètre
+
+  // Est-ce que le screening se déroule dans la même salle que le siège donné en paramètre
   belongsToSameRoom(seat: Seat): boolean {
     return seat.roomId === this._roomId;
   }

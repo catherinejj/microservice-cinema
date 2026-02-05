@@ -10,7 +10,6 @@ export class PrismaRoomRepository implements IRoomRepository {
   async create(room: Room): Promise<string> {
     const created = await this.prisma.room.create({
       data: {
-        ...(room.id ? { id: room.id } : {}),
         cinemaId: room.cinemaId,
         name: room.name,
         capacitySeat: room.capacitySeat,

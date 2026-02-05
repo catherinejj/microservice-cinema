@@ -25,10 +25,12 @@ export class AddRoomToCinemaUseCase {
       throw new Error(`Cinema with ID ${input.cinemaId} not found`);
     }
 
-    const room = Room.createNew({
+    const room = Room.create({
       cinemaId: input.cinemaId,
       name: input.roomName,
       capacitySeat: input.capacitySeat,
+      seats: [],
+      screenings: [],
     });
 
     const roomId = await this.roomRepository.create(room);

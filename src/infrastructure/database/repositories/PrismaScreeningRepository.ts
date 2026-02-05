@@ -12,7 +12,6 @@ export class PrismaScreeningRepository implements IScreeningRepository {
   async create(screening: Screening): Promise<void> {
     await this.prisma.screening.create({
       data: {
-        id: screening.id,
         roomId: screening.roomId,
         movieId: screening.movieId,
 

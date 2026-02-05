@@ -18,7 +18,7 @@ export class CreateCinemaUseCase {
     }
 
     const cinema = Cinema.create({
-      id: `cin_${Date.now()}`,   // ou uuid si tu préfères
+      id: "",
       name: input.name,
       city: input.city,
     });

@@ -10,7 +10,6 @@ export class PrismaSeatRepository implements ISeatRepository {
   async create(seat: Seat): Promise<void> {
     await this.prisma.seat.create({
       data: {
-        id: seat.id, // chez toi l'id est obligatoire
         roomId: seat.roomId,
         row: seat.row,
         number: seat.number,
@@ -23,12 +22,11 @@ export class PrismaSeatRepository implements ISeatRepository {
 
     const result = await this.prisma.seat.createMany({
       data: seats.map((s) => ({
-        id: s.id,
         roomId: s.roomId,
         row: s.row,
         number: s.number,
       })),
-      skipDuplicates: true, // évite de planter si déjà présent (unique roomId,row,number)
+      skipDuplicates: true,
     });
 
     return result.count;
@@ -51,11 +49,14 @@ export class PrismaSeatRepository implements ISeatRepository {
     return rows.map((r) => this.toDomain(r));
   }
 
-  async existsInRoom(roomId: string, row: string, number: number): Promise<boolean> {
+  async existsInRoom(
+    roomId: string,
+    row: string,
+    number: number
+  ): Promise<boolean> {
     const normalizedRow = row.trim().toUpperCase();
 
     const found = await this.prisma.seat.findUnique({
-      // nécessite @@unique([roomId, row, number]) ✅
       where: {
         roomId_row_number: {
           roomId,

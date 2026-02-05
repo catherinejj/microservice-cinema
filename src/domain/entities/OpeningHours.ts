@@ -9,7 +9,9 @@ export enum Weekday {
 }
 
 export interface OpeningHoursProps {
-  id: string;
+  // Prisma génère l'id (@default(cuid())) => pas obligatoire à la création
+  id?: string;
+
   cinemaId: string;
   day: Weekday;
   openTime: string;  // "HH:MM"
@@ -18,7 +20,7 @@ export interface OpeningHoursProps {
 }
 
 export class OpeningHours {
-  private readonly _id: string;
+  private readonly _id?: string; // optional tant que pas persisté
   private readonly _cinemaId: string;
   private readonly _day: Weekday;
 
@@ -27,7 +29,7 @@ export class OpeningHours {
   private _isClosed: boolean;
 
   private constructor(props: OpeningHoursProps) {
-    if (!props.id) throw new Error("OpeningHours: id is required");
+    // IMPORTANT : on ne vérifie PAS props.id ici, car Prisma le crée à l'insert
     if (!props.cinemaId) throw new Error("OpeningHours: cinemaId is required");
     if (!props.day) throw new Error("OpeningHours: day is required");
 
@@ -54,7 +56,7 @@ export class OpeningHours {
   }
 
   // ---------- Getters ----------
-  get id(): string {
+  get id(): string | undefined {
     return this._id;
   }
 
@@ -119,7 +121,6 @@ export class OpeningHours {
     const closeMinutes = OpeningHours.toMinutes(this._closeTime);
 
     // Cas spécial: fermeture après minuit (ex "10:00" -> "00:30")
-    // Ici closeMinutes < openMinutes => on considère la plage qui traverse minuit
     if (closeMinutes < openMinutes) {
       return currentMinutes >= openMinutes || currentMinutes < closeMinutes;
     }
@@ -139,8 +140,6 @@ export class OpeningHours {
   }
 
   private assertTimeRangeIsValid(openTime: string, closeTime: string) {
-    // On autorise le cas "traverse minuit" (close < open), donc on n'interdit pas.
-    // MAIS on interdit open == close (plage vide)
     const openMinutes = OpeningHours.toMinutes(openTime);
     const closeMinutes = OpeningHours.toMinutes(closeTime);
     if (openMinutes === closeMinutes) {

@@ -7,7 +7,7 @@ import { CreateMovieValidator } from "./CreateMovieValidator";
 @Injectable()
 export class CreateMovieUseCase {
   constructor(
-    @Inject('IMovieRepository')
+    @Inject("IMovieRepository")
     private readonly movieRepository: IMovieRepository
   ) {}
 
@@ -15,14 +15,15 @@ export class CreateMovieUseCase {
     const errors = CreateMovieValidator.validate(input);
     if (errors.length > 0) throw new Error(`Validation failed: ${errors.join(", ")}`);
 
-    const movie = Movie.createNew({
+    const movie = Movie.create({
       title: input.title,
       description: input.description,
       duration: input.duration,
-      coverImage: input.coverImage,
+      coverImage: input.coverImage ?? null,
       category: input.category,
       releaseDate: input.releaseDate,
       rating: input.rating,
+      // screenings: input.screenings ?? []  // seulement si ton CreateMovieInput le contient
     });
 
     const movieId = await this.movieRepository.create(movie);

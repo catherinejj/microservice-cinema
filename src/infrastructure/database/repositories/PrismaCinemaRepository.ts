@@ -10,13 +10,9 @@ export class PrismaCinemaRepository implements ICinemaRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(cinema: Cinema): Promise<void> {
-    if (!cinema.id) {
-      throw new Error("PrismaCinemaRepository.create: cinema.id is required");
-    }
-
     await this.prisma.cinema.create({
       data: {
-        id: cinema.id,
+        // ⚠️ PAS D'ID → Prisma génère le cuid automatiquement
         name: cinema.name,
         city: cinema.city ?? null,
       },
@@ -60,7 +56,7 @@ export class PrismaCinemaRepository implements ICinemaRepository {
   }
 
   // -------------------------
-  // Mapping Prisma -> Domain
+  // Prisma → Domain
   // -------------------------
   private toDomain(row: any): Cinema {
     const rooms: Room[] = (row.rooms ?? []).map((r: any) =>
@@ -71,7 +67,7 @@ export class PrismaCinemaRepository implements ICinemaRepository {
         capacitySeat: r.capacitySeat,
         seats: [],
         screenings: [],
-      }),
+      })
     );
 
     const openingHours: OpeningHours[] = (row.openingHours ?? []).map((h: any) =>
@@ -82,7 +78,7 @@ export class PrismaCinemaRepository implements ICinemaRepository {
         openTime: h.openTime,
         closeTime: h.closeTime,
         isClosed: h.isClosed,
-      }),
+      })
     );
 
     return Cinema.create({

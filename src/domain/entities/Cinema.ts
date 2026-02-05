@@ -2,7 +2,8 @@ import { OpeningHours } from "./OpeningHours";
 import { Room } from "./Room";
 
 export interface CinemaProps {
-  id: string;
+  // Prisma génère l'id (@default(cuid())) => il ne doit pas être obligatoire à la création
+  id?: string;
   name: string;
   city?: string;
   rooms?: Room[];
@@ -10,14 +11,15 @@ export interface CinemaProps {
 }
 
 export class Cinema {
-  private readonly _id: string;
+  // Prisma génère l'id => peut être undefined tant que l'objet n'est pas persisté
+  private readonly _id?: string;
   private _name: string;
   private _city?: string;
   private _rooms: Room[];
   private _openingHours: OpeningHours[];
 
   private constructor(props: CinemaProps) {
-    if (!props.id) throw new Error("Cinema: id is required");
+    // IMPORTANT : on ne vérifie PAS props.id ici, car Prisma le crée à l'insert
     if (!props.name || props.name.trim().length === 0) {
       throw new Error("Cinema: name is required");
     }
@@ -33,7 +35,7 @@ export class Cinema {
     return new Cinema(props);
   }
 
-  get id(): string {
+  get id(): string | undefined {
     return this._id;
   }
 
@@ -65,7 +67,8 @@ export class Cinema {
   }
 
   addRoom(room: Room) {
-    if (this._rooms.find((r) => r.id === room.id)) {
+    // si tu ajoutes des rooms avant persistance, room.id peut aussi être undefined
+    if (room.id && this._rooms.find((r) => r.id === room.id)) {
       throw new Error(`Cinema: room ${room.id} already exists`);
     }
     this._rooms.push(room);

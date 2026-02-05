@@ -58,7 +58,7 @@ export class CreateScreeningUseCase {
     const price = Money.fromDecimal(input.basePrice, input.currency);
 
     const screening = Screening.create({
-      id: `scr_${Date.now()}`,
+      id: "",
       movieId: input.movieId,
       roomId: input.roomId,
       slot,
