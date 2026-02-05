@@ -1,15 +1,28 @@
 # Changelog
 
 ## v0.2.0
-- Application layer implemented:
-  - CreateCinemaUseCase
-  - AddRoomToCinemaUseCase
-  - GenerateSeatsForRoomUseCase
-  - CreateMovieUseCase
-  - ListMoviesUseCase
-- Fixed entity instantiation via static factories (create())
-- Fixed TypeScript decorator issues with `import type`
-- Stabilized use-cases compilation
+- Application layer:
+  - Use-cases created:
+    - CreateMovie
+    - ListMovies
+    - CreateCinema
+    - AddRoomToCinema
+    - GenerateSeatsForRoom
+    - CreateScreening
+- Infrastructure layer:
+  - Prisma repositories implemented:
+    - PrismaCinemaRepository
+    - PrismaMovieRepository
+    - PrismaRoomRepository
+    - PrismaSeatRepository
+    - PrismaScreeningRepository
+  - Mapping implemented:
+    - Prisma → Domain (rehydrate)
+    - Domain → Prisma (create/update)
+- Fixed multiple TypeScript errors:
+  - private constructors usage
+  - import type issues (NestJS metadata)
+  - entity creation consistency
 
 ## v0.1.0
 - Domain entities: Movie, Cinema, Room, Seat, Screening, OpeningHours
