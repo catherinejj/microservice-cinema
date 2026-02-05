@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.3.0
+- Add NestJS modules structure
+- Register modules in AppModule
+- Prepare application layer for controllers
+
 ## v0.2.0
 - Application layer:
   - Use-cases created:

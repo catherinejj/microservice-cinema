@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Inject } from "@nestjs/common";
 import type { IMovieRepository } from "../../../domain/repositories";
 import { Movie } from "../../../domain/entities/Movie";
 import { CreateMovieInput, CreateMovieOutput } from "./CreateMovieDTO";
@@ -6,7 +6,10 @@ import { CreateMovieValidator } from "./CreateMovieValidator";
 
 @Injectable()
 export class CreateMovieUseCase {
-  constructor(private readonly movieRepository: IMovieRepository) {}
+  constructor(
+    @Inject('IMovieRepository')
+    private readonly movieRepository: IMovieRepository
+  ) {}
 
   async execute(input: CreateMovieInput): Promise<CreateMovieOutput> {
     const errors = CreateMovieValidator.validate(input);

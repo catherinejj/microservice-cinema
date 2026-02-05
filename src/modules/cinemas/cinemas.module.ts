@@ -10,14 +10,20 @@ import { PrismaCinemaRepository } from "../../infrastructure/database/repositori
 import { PrismaRoomRepository } from "../../infrastructure/database/repositories/PrismaRoomRepository";
 
 @Module({
-  // controllers: [CinemasController],
   providers: [
     PrismaService,
-    PrismaCinemaRepository,
-    PrismaRoomRepository,
+
+    {
+      provide: 'ICinemaRepository',
+      useClass: PrismaCinemaRepository,
+    },
+    {
+      provide: 'IRoomRepository',
+      useClass: PrismaRoomRepository,
+    },
+
     CreateCinemaUseCase,
     AddRoomToCinemaUseCase,
   ],
-  exports: [CreateCinemaUseCase, AddRoomToCinemaUseCase],
 })
 export class CinemasModule {}

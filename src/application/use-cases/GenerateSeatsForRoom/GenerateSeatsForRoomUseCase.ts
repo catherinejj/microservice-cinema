@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Inject } from "@nestjs/common";
 import type { IRoomRepository, ISeatRepository } from "../../../domain/repositories";
 import { Seat } from "../../../domain/entities/Seat";
 import {
@@ -10,7 +10,10 @@ import { GenerateSeatsForRoomValidator } from "./GenerateSeatsForRoomValidator";
 @Injectable()
 export class GenerateSeatsForRoomUseCase {
   constructor(
+    @Inject('ISeatRepository')
     private readonly seatRepository: ISeatRepository,
+
+    @Inject('IRoomRepository')
     private readonly roomRepository: IRoomRepository
   ) {}
 
@@ -26,7 +29,7 @@ export class GenerateSeatsForRoomUseCase {
     for (const row of input.rows) {
       for (let number = 1; number <= input.seatsPerRow; number++) {
         const seat = Seat.create({
-          id: `seat_${input.roomId}_${row}_${number}`, // ou une autre stratégie d'id
+          id: `seat_${input.roomId}_${row}_${number}`,
           roomId: input.roomId,
           row,
           number,

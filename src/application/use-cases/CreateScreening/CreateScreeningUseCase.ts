@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Inject } from "@nestjs/common";
 import type {
   IMovieRepository,
   IRoomRepository,
@@ -10,13 +10,17 @@ import { TimeRange } from "../../../domain/value-objects/TimeRange";
 import { CreateScreeningInput, CreateScreeningOutput } from "./CreateScreeningDTO";
 import { CreateScreeningValidator } from "./CreateScreeningValidator";
 
-
 @Injectable()
 export class CreateScreeningUseCase {
   constructor(
-    private movieRepository: IMovieRepository,
-    private roomRepository: IRoomRepository,
-    private screeningRepository: IScreeningRepository
+    @Inject('IMovieRepository')
+    private readonly movieRepository: IMovieRepository,
+
+    @Inject('IRoomRepository')
+    private readonly roomRepository: IRoomRepository,
+
+    @Inject('IScreeningRepository')
+    private readonly screeningRepository: IScreeningRepository
   ) {}
 
   async execute(input: CreateScreeningInput): Promise<CreateScreeningOutput> {
@@ -25,46 +29,40 @@ export class CreateScreeningUseCase {
       throw new Error(`Validation failed: ${errors.join(", ")}`);
     }
 
-    // Verify movie exists
     const movie = await this.movieRepository.findById(input.movieId);
     if (!movie) {
       throw new Error(`Movie with ID ${input.movieId} not found`);
     }
 
-    // Verify room exists
     const room = await this.roomRepository.findById(input.roomId);
     if (!room) {
       throw new Error(`Room with ID ${input.roomId} not found`);
     }
 
-    // Calculate screening end time
     const totalMinutes = movie.duration + input.extraMinutes;
     const endsAt = new Date(input.startsAt.getTime() + totalMinutes * 60000);
 
-    // Create time slot
-    const timeSlot = TimeRange.create(input.startsAt, endsAt);
+    const slot = TimeRange.of(input.startsAt, endsAt);
 
-    // Check for overlaps
     const hasOverlap = await this.screeningRepository.hasOverlap(
       input.roomId,
-      timeSlot
+      slot
     );
+
     if (hasOverlap) {
       throw new Error(
         `Screening time slot overlaps with an existing screening in room ${input.roomId}`
       );
     }
 
-    // Create screening
     const price = Money.fromDecimal(input.basePrice, input.currency);
-    const slot = TimeRange.of(input.startsAt, endsAt);
 
     const screening = Screening.create({
-    id: `scr_${Date.now()}`,
-    movieId: input.movieId,
-    roomId: input.roomId,
-    slot,
-    price,
+      id: `scr_${Date.now()}`,
+      movieId: input.movieId,
+      roomId: input.roomId,
+      slot,
+      price,
     });
 
     await this.screeningRepository.create(screening);

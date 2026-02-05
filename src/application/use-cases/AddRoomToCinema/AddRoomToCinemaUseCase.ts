@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Inject } from "@nestjs/common";
 import type { ICinemaRepository, IRoomRepository } from "../../../domain/repositories";
 import { Room } from "../../../domain/entities/Room";
 import { AddRoomToCinemaInput, AddRoomToCinemaOutput } from "./AddRoomToCinemaDTO";
@@ -7,7 +7,10 @@ import { AddRoomToCinemaValidator } from "./AddRoomToCinemaValidator";
 @Injectable()
 export class AddRoomToCinemaUseCase {
   constructor(
+    @Inject('ICinemaRepository')
     private readonly cinemaRepository: ICinemaRepository,
+
+    @Inject('IRoomRepository')
     private readonly roomRepository: IRoomRepository
   ) {}
 
