@@ -1,5 +1,40 @@
 # Changelog
 
+## v0.5.0
+
+- Security layer implemented:
+  - AuthGuard
+  - RolesGuard
+  - Roles decorator
+  - Admin-protected endpoints
+
+- Full CRUD completed:
+  - Cinema: update, delete
+  - Room: update, delete
+  - Seat: update, delete
+  - Screening: update, delete
+  - OpeningHours: update, delete
+
+- Domain update:
+  - Cinema extended with:
+    - address
+    - zipCode
+    - phoneNumber
+
+- Architecture refactor:
+  - Movie removed from persistence layer
+  - External movie microservice integration prepared
+  - MovieCatalog service added
+
+- Seed refactor:
+  - Compatible with external movies
+  - Dynamic screening end time based on movie duration
+
+- Clean Architecture reinforced:
+  - Guards in presentation layer
+  - DTO consistency
+  - Use-case isolation maintained
+
 ## v0.4.0
 - Controllers layer implemented:
   - CinemaController (create, list, getById)
