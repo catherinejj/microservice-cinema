@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { CinemasModule } from './modules/cinemas/cinemas.module';
-import { MoviesModule } from './modules/movies/movies.module';
 import { RoomsModule } from './modules/rooms/rooms.module';
 import { SeatsModule } from './modules/seats/seats.module';
 import { ScreeningsModule } from './modules/screenings/screenings.module';
@@ -9,7 +8,6 @@ import { OpeningHoursModule } from './modules/opening-hours/opening-hours.module
 @Module({
   imports: [
     CinemasModule,
-    MoviesModule,
     RoomsModule,
     SeatsModule,
     ScreeningsModule,

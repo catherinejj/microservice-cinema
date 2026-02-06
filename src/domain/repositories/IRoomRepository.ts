@@ -5,4 +5,5 @@ export interface IRoomRepository {
   update(room: Room): Promise<void>;
   findById(id: string): Promise<Room | null>;
   listByCinemaId(cinemaId: string): Promise<Room[]>;
+  delete(id: string): Promise<void>;
 }

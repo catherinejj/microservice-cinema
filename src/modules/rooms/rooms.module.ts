@@ -9,7 +9,8 @@ import { PrismaCinemaRepository } from "../../infrastructure/database/repositori
 
 import { CreateRoomUseCase } from "../../application/use-cases/CreateRoom/CreateRoomUseCase";
 import { ListRoomsByCinemaUseCase } from "../../application/use-cases/ListRoomsByCinema/ListRoomsByCinemaUseCase";
-
+import { UpdateRoomUseCase } from "../../application/use-cases/UpdateRoom/UpdateRoomUseCase";
+import { DeleteRoomUseCase } from  "../../application/use-cases/DeleteRoom/DeleteRoomUseCase";
 @Module({
   controllers: [RoomController],
   providers: [
@@ -17,6 +18,8 @@ import { ListRoomsByCinemaUseCase } from "../../application/use-cases/ListRoomsB
 
     CreateRoomUseCase,
     ListRoomsByCinemaUseCase,
+    UpdateRoomUseCase,
+	  DeleteRoomUseCase,
 
     PrismaRoomRepository,
     PrismaCinemaRepository,

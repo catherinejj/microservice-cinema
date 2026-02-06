@@ -6,6 +6,10 @@ export interface CinemaProps {
   id?: string;
   name: string;
   city?: string;
+  address?: string;
+  zipCode?: string;
+  phoneNumber?: string;
+
   rooms?: Room[];
   openingHours?: OpeningHours[];
 }
@@ -15,6 +19,9 @@ export class Cinema {
   private readonly _id?: string;
   private _name: string;
   private _city?: string;
+  private _address?: string;
+  private _zipCode?: string;
+  private _phoneNumber?: string;
   private _rooms: Room[];
   private _openingHours: OpeningHours[];
 
@@ -27,6 +34,9 @@ export class Cinema {
     this._id = props.id;
     this._name = props.name.trim();
     this._city = props.city;
+    this._address = props.address;
+    this._phoneNumber = props.phoneNumber;
+    this._zipCode = props.zipCode;
     this._rooms = props.rooms ?? [];
     this._openingHours = props.openingHours ?? [];
   }
@@ -45,6 +55,18 @@ export class Cinema {
 
   get city(): string | undefined {
     return this._city;
+  }
+
+  get address(): string | undefined {
+    return this._address;
+  }
+
+  get zipCode(): string | undefined {
+    return this._zipCode;
+  }
+
+  get phoneNumber(): string | undefined {
+    return this._phoneNumber;
   }
 
   get rooms(): ReadonlyArray<Room> {
@@ -66,8 +88,19 @@ export class Cinema {
     this._city = city;
   }
 
+  setAddress(address?: string) {
+    this._address = address;
+  }
+
+  setZipCode(zip?: string) {
+    this._zipCode = zip;
+  }
+
+  setPhoneNumber(phone?: string) {
+    this._phoneNumber = phone;
+  }
+
   addRoom(room: Room) {
-    // si tu ajoutes des rooms avant persistance, room.id peut aussi être undefined
     if (room.id && this._rooms.find((r) => r.id === room.id)) {
       throw new Error(`Cinema: room ${room.id} already exists`);
     }

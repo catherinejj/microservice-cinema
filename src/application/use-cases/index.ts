@@ -1,11 +1,3 @@
-// CreateMovie
-export { CreateMovieUseCase } from "./CreateMovie/CreateMovieUseCase";
-export { CreateMovieInput, CreateMovieOutput } from "./CreateMovie/CreateMovieDTO";
-
-// ListMovies
-export { ListMoviesUseCase } from "./ListMovies/ListMoviesUseCase";
-export { ListMoviesInput, ListMoviesOutput } from "./ListMovies/ListMoviesDTO";
-
 // CreateCinema
 export { CreateCinemaUseCase } from "./CreateCinema/CreateCinemaUseCase";
 export { CreateCinemaInput, CreateCinemaOutput } from "./CreateCinema/CreateCinemaDTO";

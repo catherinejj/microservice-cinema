@@ -10,9 +10,9 @@ export class PrismaCinemaRepository implements ICinemaRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(cinema: Cinema): Promise<void> {
+    // ✅ Prisma génère l'id
     await this.prisma.cinema.create({
       data: {
-        // ⚠️ PAS D'ID → Prisma génère le cuid automatiquement
         name: cinema.name,
         city: cinema.city ?? null,
       },
@@ -20,6 +20,8 @@ export class PrismaCinemaRepository implements ICinemaRepository {
   }
 
   async update(cinema: Cinema): Promise<void> {
+    if (!cinema.id) throw new Error("PrismaCinemaRepository.update: cinema.id is required");
+
     await this.prisma.cinema.update({
       where: { id: cinema.id },
       data: {
@@ -29,35 +31,28 @@ export class PrismaCinemaRepository implements ICinemaRepository {
     });
   }
 
+  async delete(id: string): Promise<void> {
+    await this.prisma.cinema.delete({ where: { id } });
+  }
+
   async findById(id: string): Promise<Cinema | null> {
     const row = await this.prisma.cinema.findUnique({
       where: { id },
-      include: {
-        rooms: true,
-        openingHours: true,
-      },
+      include: { rooms: true, openingHours: true },
     });
 
     if (!row) return null;
-
     return this.toDomain(row);
   }
 
   async list(): Promise<Cinema[]> {
     const rows = await this.prisma.cinema.findMany({
       orderBy: { name: "asc" },
-      include: {
-        rooms: true,
-        openingHours: true,
-      },
+      include: { rooms: true, openingHours: true },
     });
-
     return rows.map((r) => this.toDomain(r));
   }
 
-  // -------------------------
-  // Prisma → Domain
-  // -------------------------
   private toDomain(row: any): Cinema {
     const rooms: Room[] = (row.rooms ?? []).map((r: any) =>
       Room.create({

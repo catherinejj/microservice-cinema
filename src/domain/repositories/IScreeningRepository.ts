@@ -7,4 +7,5 @@ export interface IScreeningRepository {
   findById(id: string): Promise<Screening | null>;
   listByRoomId(roomId: string, from?: Date, to?: Date): Promise<Screening[]>;
   hasOverlap(roomId: string, slot: TimeRange, excludeScreeningId?: string): Promise<boolean>;
+  delete(id: string): Promise<void>;
 }

@@ -10,42 +10,47 @@ export class PrismaScreeningRepository implements IScreeningRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(screening: Screening): Promise<string> {
-  const created = await this.prisma.screening.create({
-    data: {
-      movieId: screening.movieId,
-      roomId: screening.roomId,
-      startsAt: screening.slot.start,
-      endsAt: screening.slot.end,
-      basePrice: screening.price.amount, // ou screening.price.cents selon ton mapping Prisma
-      currency: screening.price.currency,
-    },
-    select: { id: true },
-  });
+    const created = await this.prisma.screening.create({
+      data: {
+        // Prisma génère l'id si tu ne le fournis pas
+        // MAIS toi tu le génères via cuid() dans l'use-case, donc on peut l'envoyer.
+        id: screening.id,
+        roomId: screening.roomId,
+        movieId: screening.movieId,
+        startsAt: screening.slot.start,
+        endsAt: screening.slot.end,
+        basePrice: screening.price.amount as any,
+        currency: screening.price.currency,
+        extraMinutes: 0,
+      },
+      select: { id: true },
+    });
 
-  return created.id;
-}
+    return created.id;
+  }
 
   async update(screening: Screening): Promise<void> {
+    if (!screening.id) throw new Error("PrismaScreeningRepository.update: screening.id is required");
+
     await this.prisma.screening.update({
       where: { id: screening.id },
       data: {
         roomId: screening.roomId,
         movieId: screening.movieId,
-
         startsAt: screening.slot.start,
         endsAt: screening.slot.end,
-
         basePrice: screening.price.amount as any,
         currency: screening.price.currency,
       },
     });
   }
 
-  async findById(id: string): Promise<Screening | null> {
-    const row = await this.prisma.screening.findUnique({
-      where: { id },
-    });
+  async delete(id: string): Promise<void> {
+    await this.prisma.screening.delete({ where: { id } });
+  }
 
+  async findById(id: string): Promise<Screening | null> {
+    const row = await this.prisma.screening.findUnique({ where: { id } });
     return row ? this.toDomain(row) : null;
   }
 
@@ -66,12 +71,7 @@ export class PrismaScreeningRepository implements IScreeningRepository {
     return rows.map((r) => this.toDomain(r));
   }
 
-  async hasOverlap(
-    roomId: string,
-    slot: TimeRange,
-    excludeScreeningId?: string
-  ): Promise<boolean> {
-    // règle mathématique qui permet de détecter si deux créneaux horaires se chevauchent.: Overlap: existing.startsAt < slot.end AND existing.endsAt > slot.start
+  async hasOverlap(roomId: string, slot: TimeRange, excludeScreeningId?: string): Promise<boolean> {
     const found = await this.prisma.screening.findFirst({
       where: {
         roomId,
@@ -85,14 +85,13 @@ export class PrismaScreeningRepository implements IScreeningRepository {
     return !!found;
   }
 
-  // ---------- Mapping ----------
   private toDomain(row: {
     id: string;
     roomId: string;
     movieId: string;
     startsAt: Date;
     endsAt: Date;
-    basePrice: any; // Prisma Decimal
+    basePrice: any;
     currency: string;
   }): Screening {
     const slot = TimeRange.of(row.startsAt, row.endsAt);

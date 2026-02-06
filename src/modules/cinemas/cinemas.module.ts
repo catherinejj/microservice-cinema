@@ -10,7 +10,8 @@ import { GetCinemaByIdUseCase } from "../../application/use-cases/GetCinemaById/
 
 import { PrismaCinemaRepository } from "../../infrastructure/database/repositories/PrismaCinemaRepository";
 import { PrismaRoomRepository } from "../../infrastructure/database/repositories/PrismaRoomRepository";
-
+import { UpdateCinemaUseCase } from "../../application/use-cases/UpdateCinema/UpdateCinemaUseCase";
+import { DeleteCinemaUseCase } from "../../application/use-cases/DeleteCinema/DeleteCinemaUseCase";
 @Module({
   controllers: [CinemaController],
   providers: [
@@ -23,6 +24,8 @@ import { PrismaRoomRepository } from "../../infrastructure/database/repositories
     AddRoomToCinemaUseCase,
     ListCinemasUseCase,
     GetCinemaByIdUseCase,
+    UpdateCinemaUseCase,
+    DeleteCinemaUseCase,
   ],
 })
 export class CinemasModule {}

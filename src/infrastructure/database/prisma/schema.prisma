@@ -36,7 +36,9 @@ model Cinema {
   id   String  @id @default(cuid())
   name String
   city String?
-
+  address String?
+  zipCode String?
+  phoneNumber String?
   rooms        Room[]
   openingHours OpeningHours[]
 

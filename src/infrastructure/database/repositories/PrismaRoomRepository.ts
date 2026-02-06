@@ -35,6 +35,11 @@ export class PrismaRoomRepository implements IRoomRepository {
     });
   }
 
+  async delete(id: string): Promise<void> {
+    await this.prisma.room.delete({ where: { id } });
+  }
+
+
   async findById(id: string): Promise<Room | null> {
     const row = await this.prisma.room.findUnique({
       where: { id },

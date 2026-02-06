@@ -11,6 +11,8 @@ import { MovieCatalogService } from "../../application/services/MovieService/Mov
 
 import { CreateScreeningUseCase } from "../../application/use-cases/CreateScreening/CreateScreeningUseCase";
 import { ListScreeningsByRoomUseCase } from "../../application/use-cases/ListScreeningsByRoomUseCase/ListScreeningsByRoomUseCase";
+import { UpdateScreeningUseCase } from "../../application/use-cases/UpdateScreening/UpdateScreeningUseCase";
+import { DeleteScreeningUseCase } from "../../application/use-cases/DeleteScreening/DeleteScreeningUseCase";
 
 @Module({
   controllers: [ScreeningController],
@@ -29,6 +31,8 @@ import { ListScreeningsByRoomUseCase } from "../../application/use-cases/ListScr
     // use-cases
     CreateScreeningUseCase,
     ListScreeningsByRoomUseCase,
+    UpdateScreeningUseCase,
+    DeleteScreeningUseCase,
   ],
 })
 export class ScreeningsModule {}

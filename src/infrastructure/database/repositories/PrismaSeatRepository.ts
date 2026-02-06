@@ -32,11 +32,25 @@ export class PrismaSeatRepository implements ISeatRepository {
     return result.count;
   }
 
-  async findById(id: string): Promise<Seat | null> {
-    const row = await this.prisma.seat.findUnique({
-      where: { id },
-    });
+  async update(seat: Seat): Promise<void> {
+    if (!seat.id) throw new Error("PrismaSeatRepository.update: seat.id is required");
 
+    await this.prisma.seat.update({
+      where: { id: seat.id },
+      data: {
+        // roomId: seat.roomId // en général on ne change pas roomId
+        row: seat.row,
+        number: seat.number,
+      },
+    });
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.prisma.seat.delete({ where: { id } });
+  }
+
+  async findById(id: string): Promise<Seat | null> {
+    const row = await this.prisma.seat.findUnique({ where: { id } });
     return row ? this.toDomain(row) : null;
   }
 
@@ -45,15 +59,10 @@ export class PrismaSeatRepository implements ISeatRepository {
       where: { roomId },
       orderBy: [{ row: "asc" }, { number: "asc" }],
     });
-
     return rows.map((r) => this.toDomain(r));
   }
 
-  async existsInRoom(
-    roomId: string,
-    row: string,
-    number: number
-  ): Promise<boolean> {
+  async existsInRoom(roomId: string, row: string, number: number): Promise<boolean> {
     const normalizedRow = row.trim().toUpperCase();
 
     const found = await this.prisma.seat.findUnique({
@@ -70,13 +79,7 @@ export class PrismaSeatRepository implements ISeatRepository {
     return !!found;
   }
 
-  // ---------- Mapping ----------
-  private toDomain(row: {
-    id: string;
-    roomId: string;
-    row: string;
-    number: number;
-  }): Seat {
+  private toDomain(row: { id: string; roomId: string; row: string; number: number }): Seat {
     return Seat.create({
       id: row.id,
       roomId: row.roomId,
