@@ -19,6 +19,9 @@ export class UpdateCinemaUseCase {
 
     if (input.name !== undefined) cinema.rename(input.name);
     if (input.city !== undefined) cinema.moveToCity(input.city ?? undefined);
+    if (input.address !== undefined) cinema.setAddress(input.address ?? undefined);
+    if (input.zipCode !== undefined) cinema.setZipCode(input.zipCode ?? undefined);
+    if (input.phoneNumber !== undefined) cinema.setPhoneNumber(input.phoneNumber ?? undefined);
 
     await this.cinemaRepository.update(cinema);
 

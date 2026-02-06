@@ -61,9 +61,12 @@ export class CinemaController {
     @Body() body: UpdateCinemaRequestDto
   ): Promise<UpdateCinemaResponseDto> {
     return this.updateCinema.execute({
-      id,
-      name: body.name,
-      city: body.city,
+        id,
+        name: body.name,
+        city: body.city,
+        address: body.address,
+        zipCode: body.zipCode,
+        phoneNumber: body.phoneNumber,
     });
   }
 

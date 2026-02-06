@@ -21,6 +21,9 @@ export class CreateCinemaUseCase {
       id: "",
       name: input.name,
       city: input.city,
+      address: input.address,
+      zipCode: input.zipCode,
+      phoneNumber: input.phoneNumber,
     });
 
     await this.cinemaRepository.create(cinema);

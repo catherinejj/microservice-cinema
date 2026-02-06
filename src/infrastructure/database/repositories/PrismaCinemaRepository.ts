@@ -15,6 +15,9 @@ export class PrismaCinemaRepository implements ICinemaRepository {
       data: {
         name: cinema.name,
         city: cinema.city ?? null,
+        address: cinema.address ?? null,
+        zipCode: cinema.zipCode ?? null,
+        phoneNumber: cinema.phoneNumber ?? null,
       },
     });
   }
@@ -27,6 +30,9 @@ export class PrismaCinemaRepository implements ICinemaRepository {
       data: {
         name: cinema.name,
         city: cinema.city ?? null,
+        address: cinema.address ?? null,
+        zipCode: cinema.zipCode ?? null,
+        phoneNumber: cinema.phoneNumber ?? null,
       },
     });
   }
@@ -80,6 +86,9 @@ export class PrismaCinemaRepository implements ICinemaRepository {
       id: row.id,
       name: row.name,
       city: row.city ?? undefined,
+      address: row.address ?? undefined,
+      zipCode: row.zipCode ?? undefined,
+      phoneNumber: row.phoneNumber ?? undefined,
       rooms,
       openingHours,
     });
