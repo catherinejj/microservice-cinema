@@ -25,7 +25,7 @@ model OpeningHours {
   closeTime String
   isClosed  Boolean @default(false)
 
-  cinema    Cinema  @relation(fields: [cinemaId], references: [id], onDelete: Cascade)
+  cinema Cinema @relation(fields: [cinemaId], references: [id], onDelete: Cascade)
 
   @@unique([cinemaId, day])
   @@index([cinemaId])
@@ -33,11 +33,11 @@ model OpeningHours {
 
 //le cinema
 model Cinema {
-  id        String @id @default(cuid())
-  name      String
-  city      String?
+  id   String  @id @default(cuid())
+  name String
+  city String?
 
-  rooms     Room[]
+  rooms        Room[]
   openingHours OpeningHours[]
 
   createdAt DateTime @default(now())
@@ -46,25 +46,25 @@ model Cinema {
 
 //la salle
 model Room {
-  id        String @id @default(cuid())
-  cinemaId  String
-  name      String
-  cinema    Cinema @relation(fields: [cinemaId], references: [id])
-  seats     Seat[]
-  capacitySeat  Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String   @id @default(cuid())
+  cinemaId     String
+  name         String
+  cinema       Cinema   @relation(fields: [cinemaId], references: [id])
+  seats        Seat[]
+  capacitySeat Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   screenings Screening[]
 }
 
 //la place
 model Seat {
-  id        String @id @default(cuid())
-  roomId    String
-  row       String
-  number    Int
-  room      Room @relation(fields: [roomId], references: [id])
+  id     String @id @default(cuid())
+  roomId String
+  row    String
+  number Int
+  room   Room   @relation(fields: [roomId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -73,7 +73,6 @@ model Seat {
 }
 
 model Screening {
-
   id           String   @id @default(cuid())
   roomId       String
   movieId      String
@@ -81,35 +80,16 @@ model Screening {
   endsAt       DateTime
   extraMinutes Int?     @default(0) // un temps pour les pubs + entracte
   //999.99 euros c'est resonnalbe comme prix
-  basePrice    Decimal  @db.Decimal(5, 2)//pour eviter un float trop long on definit le nombre de chiffre avant et apres la virgule 
+  basePrice    Decimal  @db.Decimal(5, 2) //pour eviter un float trop long on definit le nombre de chiffre avant et apres la virgule 
   currency     String   @default("EUR")
 
-  room         Room     @relation(fields: [roomId], references: [id])
-  movie        Movie    @relation(fields: [movieId], references: [id])
+  room Room @relation(fields: [roomId], references: [id])
+  //movie        Movie    @relation(fields: [movieId], references: [id])
 
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([roomId, startsAt])
   @@index([movieId])
   @@index([startsAt])
-}
-
-//le film
-//(obligation de refaire le model meme si on peut faire la relation entre les deux bdd, c'est bizarre mais bon ...)
-model Movie {
-  id          String   @id @default(cuid())
-  title       String
-  description String
-  duration    Int
-  coverImage  String?
-  category    String
-  releaseDate DateTime
-  rating      Float
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  screenings  Screening[]
-
-  @@unique([title, releaseDate])
 }

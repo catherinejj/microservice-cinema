@@ -1,0 +1,1 @@
+export const MOVIE_CATALOG_TOKEN = "IMovieCatalog";
