@@ -12,6 +12,7 @@ import { UpdateScreeningRequestDto } from "../dto/UpdateScreeningRequestDto";
 import { UpdateScreeningResponseDto } from "../dto/UpdateScreeningResponseDto";
 import { DeleteScreeningResponseDto } from "../dto/DeleteScreeningResponseDto";
 import { ScreeningDetailsResponseDto } from "../dto/ScreeningDetailsResponseDto";
+import { ScreeningBookingResponseDto } from "../dto/ScreeningBookingResponseDto";
 
 import { AuthGuard } from "../auth/auth.guard";
 import { RolesGuard } from "../auth/roles.guard";
@@ -66,6 +67,27 @@ export class ScreeningController {
   @ApiOkResponse({ description: "List of screenings for a room" })
   async list(@Param("roomId") roomId: string) {
     return this.listByRoom.execute({ roomId });
+  }
+
+
+  @Get(":id/booking")
+  @ApiParam({ name: "id", type: String })
+  @ApiOkResponse({ type: ScreeningBookingResponseDto })
+  async getForBooking(@Param("id") id: string): Promise<ScreeningBookingResponseDto> {
+    const data = await this.getById.execute({ id });
+
+    return {
+      id: data.id,
+      movieId: data.movie.id,
+      roomId: data.room.id,
+      cinemaId: data.cinema.id,
+      startsAt: data.startsAt.toISOString(),
+      endsAt: data.endsAt.toISOString(),
+      price: {
+        amount: Number(data.price.amount),
+        currency: data.price.currency,
+      },
+    };
   }
 
   @Patch(":id")

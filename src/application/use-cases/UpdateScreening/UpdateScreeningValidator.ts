@@ -1,4 +1,4 @@
-import { UpdateScreeningInput } from "./UpdateScreeningDto";
+import { UpdateScreeningInput } from "./UpdateScreeningDTO";
 
 export class UpdateScreeningValidator {
   static validate(input: UpdateScreeningInput): string[] {

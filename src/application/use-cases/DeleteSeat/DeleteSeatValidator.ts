@@ -1,4 +1,4 @@
-import { DeleteSeatInput } from "./DeleteSeatDto";
+import { DeleteSeatInput } from "./DeleteSeatDTO";
 
 export class DeleteSeatValidator {
   static validate(input: DeleteSeatInput): string[] {

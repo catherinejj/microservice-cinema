@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import type { IScreeningRepository } from "../../../domain/repositories";
-import { DeleteScreeningInput, DeleteScreeningOutput } from "./DeleteScreeningDto";
+import { DeleteScreeningInput, DeleteScreeningOutput } from "./DeleteScreeningDTO";
 import { DeleteScreeningValidator } from "./DeleteScreeningValidator";
 
 @Injectable()

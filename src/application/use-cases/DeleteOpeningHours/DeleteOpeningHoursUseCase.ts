@@ -1,10 +1,10 @@
 import { Inject, Injectable } from "@nestjs/common";
 import type { IOpeningHoursRepository } from "../../../domain/repositories/IOpeningHoursRepository";
-import { DeleteOpeningHoursInput, DeleteOpeningHoursOutput } from "./DeleteOpeningHoursDto";
+import { DeleteOpeningHoursInput, DeleteOpeningHoursOutput } from "./DeleteOpeningHoursDTO";
 import { DeleteOpeningHoursValidator } from "./DeleteOpeningHoursValidator";
 
 @Injectable()
-export class DeleteOpeningHoursUseCase {
+export class DeleteOpeningHoursUseCase { 
   constructor(
     @Inject("IOpeningHoursRepository")
     private readonly openingHoursRepository: IOpeningHoursRepository

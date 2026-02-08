@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import type { IOpeningHoursRepository } from "../../../domain/repositories/IOpeningHoursRepository";
-import { UpdateOpeningHoursInput, UpdateOpeningHoursOutput } from "./UpdateOpeningHoursDto";
+import { UpdateOpeningHoursInput, UpdateOpeningHoursOutput } from "./UpdateOpeningHoursDTO";
 import { UpdateOpeningHoursValidator } from "./UpdateOpeningHoursValidator";
 
 @Injectable()

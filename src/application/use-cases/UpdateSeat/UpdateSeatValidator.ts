@@ -1,4 +1,4 @@
-import { UpdateSeatInput } from "./UpdateSeatDto";
+import { UpdateSeatInput } from "./UpdateSeatDTO";
 
 export class UpdateSeatValidator {
   static validate(input: UpdateSeatInput): string[] {

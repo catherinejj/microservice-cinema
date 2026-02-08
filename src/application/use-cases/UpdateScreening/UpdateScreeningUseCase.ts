@@ -2,7 +2,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import type { IScreeningRepository } from "../../../domain/repositories";
 import { TimeRange } from "../../../domain/value-objects/TimeRange";
 import { Money } from "../../../domain/value-objects/Money";
-import { UpdateScreeningInput, UpdateScreeningOutput } from "./UpdateScreeningDto";
+import { UpdateScreeningInput, UpdateScreeningOutput } from "./UpdateScreeningDTO";
 import { UpdateScreeningValidator } from "./UpdateScreeningValidator";
 
 @Injectable()

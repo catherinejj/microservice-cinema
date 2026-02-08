@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import type { ISeatRepository } from "../../../domain/repositories";
-import { DeleteSeatInput, DeleteSeatOutput } from "./DeleteSeatDto";
+import { DeleteSeatInput, DeleteSeatOutput } from "./DeleteSeatDTO";
 import { DeleteSeatValidator } from "./DeleteSeatValidator";
 
 @Injectable()

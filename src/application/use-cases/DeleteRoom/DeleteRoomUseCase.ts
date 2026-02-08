@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import type { IRoomRepository } from "../../../domain/repositories";
-import { DeleteRoomInput, DeleteRoomOutput } from "./DeleteRoomDto";
+import { DeleteRoomInput, DeleteRoomOutput } from "./DeleteRoomDTO";
 import { DeleteRoomValidator } from "./DeleteRoomValidator";
 
 @Injectable()

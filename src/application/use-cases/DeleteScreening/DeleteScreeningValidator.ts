@@ -1,4 +1,4 @@
-import { DeleteScreeningInput } from "./DeleteScreeningDto";
+import { DeleteScreeningInput } from "./DeleteScreeningDTO";
 
 export class DeleteScreeningValidator {
   static validate(input: DeleteScreeningInput): string[] {

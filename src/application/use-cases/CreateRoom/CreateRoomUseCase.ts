@@ -1,7 +1,7 @@
 import { Injectable, Inject } from "@nestjs/common";
 import type { ICinemaRepository, IRoomRepository } from "../../../domain/repositories";
 import { Room } from "../../../domain/entities/Room";
-import { CreateRoomInput, CreateRoomOutput } from "./CreateRoomDto";
+import { CreateRoomInput, CreateRoomOutput } from "./CreateRoomDTO";
 import { CreateRoomValidator } from "./CreateRoomValidator";
 
 @Injectable()

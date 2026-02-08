@@ -1,4 +1,4 @@
-import { DeleteOpeningHoursInput } from "./DeleteOpeningHoursDto";
+import { DeleteOpeningHoursInput } from "./DeleteOpeningHoursDTO";
 
 export class DeleteOpeningHoursValidator {
   static validate(input: DeleteOpeningHoursInput): string[] {

@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import type { IRoomRepository } from "../../../domain/repositories";
-import { UpdateRoomInput, UpdateRoomOutput } from "./UpdateRoomDto";
+import { UpdateRoomInput, UpdateRoomOutput } from "./UpdateRoomDTO";
 import { UpdateRoomValidator } from "./UpdateRoomValidator";
 
 @Injectable()

@@ -1,4 +1,4 @@
-import { DeleteCinemaInput } from "./DeleteCinemaDto";
+import { DeleteCinemaInput } from "./DeleteCinemaDTO";
 
 export class DeleteCinemaValidator {
   static validate(input: DeleteCinemaInput): string[] {

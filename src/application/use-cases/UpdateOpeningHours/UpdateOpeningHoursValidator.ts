@@ -1,4 +1,4 @@
-import { UpdateOpeningHoursInput } from "./UpdateOpeningHoursDto";
+import { UpdateOpeningHoursInput } from "./UpdateOpeningHoursDTO";
 
 export class UpdateOpeningHoursValidator {
   static validate(input: UpdateOpeningHoursInput): string[] {

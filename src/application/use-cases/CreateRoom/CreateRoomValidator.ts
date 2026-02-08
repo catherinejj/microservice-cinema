@@ -1,4 +1,4 @@
-import { CreateRoomInput } from "./CreateRoomDto";
+import { CreateRoomInput } from "./CreateRoomDTO";
 
 export class CreateRoomValidator {
   static validate(input: CreateRoomInput): string[] {

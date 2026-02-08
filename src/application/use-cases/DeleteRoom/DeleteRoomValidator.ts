@@ -1,4 +1,4 @@
-import { DeleteRoomInput } from "./DeleteRoomDto";
+import { DeleteRoomInput } from "./DeleteRoomDTO";
 
 export class DeleteRoomValidator {
   static validate(input: DeleteRoomInput): string[] {

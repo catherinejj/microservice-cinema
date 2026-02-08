@@ -1,4 +1,4 @@
-import { UpdateRoomInput } from "./UpdateRoomDto";
+import { UpdateRoomInput } from "./UpdateRoomDTO";
 
 export class UpdateRoomValidator {
   static validate(input: UpdateRoomInput): string[] {

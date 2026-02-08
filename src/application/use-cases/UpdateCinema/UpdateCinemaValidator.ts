@@ -1,4 +1,4 @@
-import { UpdateCinemaInput } from "./UpdateCinemaDto";
+import { UpdateCinemaInput } from "./UpdateCinemaDTO";
 
 export class UpdateCinemaValidator {
   static validate(input: UpdateCinemaInput): string[] {

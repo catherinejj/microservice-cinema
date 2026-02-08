@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import type { ICinemaRepository } from "../../../domain/repositories";
-import { UpdateCinemaInput, UpdateCinemaOutput } from "./UpdateCinemaDto";
+import { UpdateCinemaInput, UpdateCinemaOutput } from "./UpdateCinemaDTO";
 import { UpdateCinemaValidator } from "./UpdateCinemaValidator";
 
 @Injectable()
