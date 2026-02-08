@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
 import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiTags } from "@nestjs/swagger";
 
 import { CreateScreeningUseCase } from "../../application/use-cases/CreateScreening/CreateScreeningUseCase";
@@ -14,10 +14,6 @@ import { DeleteScreeningResponseDto } from "../dto/DeleteScreeningResponseDto";
 import { ScreeningDetailsResponseDto } from "../dto/ScreeningDetailsResponseDto";
 import { ScreeningBookingResponseDto } from "../dto/ScreeningBookingResponseDto";
 
-import { AuthGuard } from "../auth/auth.guard";
-import { RolesGuard } from "../auth/roles.guard";
-import { Roles } from "../auth/roles.decorator";
-
 @ApiTags("screenings")
 @Controller("screenings")
 export class ScreeningController {
@@ -30,8 +26,6 @@ export class ScreeningController {
   ) {}
 
   @Post()
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles("admin")
   @ApiBody({ type: CreateScreeningRequestDto })
   @ApiCreatedResponse({ description: "Screening created" })
   async create(@Body() body: CreateScreeningRequestDto) {
@@ -69,7 +63,6 @@ export class ScreeningController {
     return this.listByRoom.execute({ roomId });
   }
 
-
   @Get(":id/booking")
   @ApiParam({ name: "id", type: String })
   @ApiOkResponse({ type: ScreeningBookingResponseDto })
@@ -91,8 +84,6 @@ export class ScreeningController {
   }
 
   @Patch(":id")
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles("admin")
   @ApiParam({ name: "id", type: String })
   @ApiOkResponse({ type: UpdateScreeningResponseDto })
   async update(
@@ -109,8 +100,6 @@ export class ScreeningController {
   }
 
   @Delete(":id")
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles("admin")
   @ApiParam({ name: "id", type: String })
   @ApiOkResponse({ type: DeleteScreeningResponseDto })
   async remove(@Param("id") id: string): Promise<DeleteScreeningResponseDto> {

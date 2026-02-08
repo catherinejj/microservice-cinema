@@ -30,7 +30,7 @@ export class MovieCatalogService implements IMovieCatalog {
       id: data.id,
       title: data.title,
       duration: data.duration,
-      posterUrl: data.posterUrl,
+      posterUrl: (data as any).coverImage ?? (data as any).posterUrl,
     };
   }
 }
