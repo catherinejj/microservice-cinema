@@ -1,5 +1,6 @@
 export type MovieSummaryDto = {
   id: string;
-  duration: number;      // minutes
-  posterUrl?: string;    // url affiche
+  title: string;
+  duration: number;
+  posterUrl?: string;
 };

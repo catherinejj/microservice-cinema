@@ -1,7 +1,6 @@
-// src/application/services/movie/MovieCatalogService.ts
 import { Injectable } from "@nestjs/common";
 import type { IMovieCatalog } from "../../ports/IMovieCatalog";
-import type { MovieSummaryDto } from "./MovieSummaryDto"
+import type { MovieSummaryDto } from "./MovieSummaryDto";
 import type { MovieServiceResponseDto } from "./MovieServiceResponseDto";
 import { HttpMovieCatalogClient } from "../../../infrastructure/http/clients/HttpMovieCatalogClient";
 
@@ -17,14 +16,19 @@ export class MovieCatalogService implements IMovieCatalog {
 
     const data = (await res.json()) as MovieServiceResponseDto;
 
-    // validation minimale
-    if (!data?.id || typeof data.duration !== "number") {
-      throw new Error("Movie service: invalid response (id/duration missing)");
+    // validation minimale (id/title/duration)
+    if (
+      !data?.id ||
+      typeof data.title !== "string" ||
+      typeof data.duration !== "number"
+    ) {
+      throw new Error("Movie service: invalid response (id/title/duration missing)");
     }
 
     // mapping vers ton DTO "cinema needs"
     return {
       id: data.id,
+      title: data.title,
       duration: data.duration,
       posterUrl: data.posterUrl,
     };

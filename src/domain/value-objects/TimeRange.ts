@@ -41,6 +41,14 @@ export class TimeRange {
     return Math.floor(this.durationMs / 60000);
   }
 
+  get startsAt(): Date {
+    return this.start;
+  }
+
+  get endsAt(): Date {
+    return this.end;
+  }
+
   overlaps(other: TimeRange): boolean {
     return this._start < other._end && other._start < this._end;
   }

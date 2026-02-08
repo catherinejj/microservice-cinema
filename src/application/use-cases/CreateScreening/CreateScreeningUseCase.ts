@@ -7,7 +7,9 @@ import { TimeRange } from "../../../domain/value-objects/TimeRange";
 import { CreateScreeningInput, CreateScreeningOutput } from "./CreateScreeningDTO";
 import { CreateScreeningValidator } from "./CreateScreeningValidator";
 
-import cuid from "cuid";
+function addMinutes(date: Date, minutes: number): Date {
+  return new Date(date.getTime() + minutes * 60_000);
+}
 
 @Injectable()
 export class CreateScreeningUseCase {
@@ -32,7 +34,10 @@ export class CreateScreeningUseCase {
     const room = await this.roomRepository.findById(input.roomId);
     if (!room) throw new Error(`Room with ID ${input.roomId} not found`);
 
-    const slot = TimeRange.of(input.startsAt, input.endsAt);
+    const extra = input.extraMinutes ?? 0;
+    const endsAt = addMinutes(input.startsAt, movie.duration + extra);
+
+    const slot = TimeRange.of(input.startsAt, endsAt);
 
     const hasOverlap = await this.screeningRepository.hasOverlap(input.roomId, slot);
     if (hasOverlap) {
@@ -41,16 +46,16 @@ export class CreateScreeningUseCase {
       );
     }
 
+    // ✅ id undefined : Prisma le génère
     const screening = Screening.create({
-      id: cuid(),
       movieId: input.movieId,
       roomId: input.roomId,
       slot,
       price: Money.fromDecimal(input.basePrice, input.currency),
     });
 
-    await this.screeningRepository.create(screening);
+    const id = await this.screeningRepository.create(screening);
 
-    return { id: screening.id as string };
+    return { id };
   }
 }

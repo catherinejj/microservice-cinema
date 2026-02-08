@@ -5,11 +5,13 @@ import { CreateScreeningUseCase } from "../../application/use-cases/CreateScreen
 import { ListScreeningsByRoomUseCase } from "../../application/use-cases/ListScreeningsByRoomUseCase/ListScreeningsByRoomUseCase";
 import { UpdateScreeningUseCase } from "../../application/use-cases/UpdateScreening/UpdateScreeningUseCase";
 import { DeleteScreeningUseCase } from "../../application/use-cases/DeleteScreening/DeleteScreeningUseCase";
+import { GetScreeningByIdUseCase } from "../../application/use-cases/GetScreeningDetailsById/GetScreeningByIdUseCase";
 
 import { CreateScreeningRequestDto } from "../dto/CreateScreeningRequestDto";
 import { UpdateScreeningRequestDto } from "../dto/UpdateScreeningRequestDto";
 import { UpdateScreeningResponseDto } from "../dto/UpdateScreeningResponseDto";
 import { DeleteScreeningResponseDto } from "../dto/DeleteScreeningResponseDto";
+import { ScreeningDetailsResponseDto } from "../dto/ScreeningDetailsResponseDto";
 
 import { AuthGuard } from "../auth/auth.guard";
 import { RolesGuard } from "../auth/roles.guard";
@@ -22,7 +24,8 @@ export class ScreeningController {
     private readonly createScreening: CreateScreeningUseCase,
     private readonly listByRoom: ListScreeningsByRoomUseCase,
     private readonly updateScreening: UpdateScreeningUseCase,
-    private readonly deleteScreening: DeleteScreeningUseCase
+    private readonly deleteScreening: DeleteScreeningUseCase,
+    private readonly getById: GetScreeningByIdUseCase
   ) {}
 
   @Post()
@@ -35,12 +38,28 @@ export class ScreeningController {
       movieId: body.movieId,
       roomId: body.roomId,
       startsAt: new Date(body.startsAt),
-      endsAt: new Date(body.endsAt),
+      extraMinutes: body.extraMinutes,
       basePrice: body.basePrice,
       currency: body.currency,
     });
   }
 
+  @Get(":id")
+  @ApiParam({ name: "id", type: String })
+  @ApiOkResponse({ type: ScreeningDetailsResponseDto })
+  async getScreeningById(@Param("id") id: string): Promise<ScreeningDetailsResponseDto> {
+    const data = await this.getById.execute({ id });
+
+    return {
+      id: data.id,
+      startsAt: data.startsAt.toISOString(),
+      endsAt: data.endsAt.toISOString(),
+      price: data.price,
+      movie: data.movie,
+      cinema: data.cinema,
+      room: data.room,
+    };
+  }
 
   @Get("room/:roomId")
   @ApiParam({ name: "roomId", type: String })

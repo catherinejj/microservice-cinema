@@ -66,6 +66,10 @@ export class Money {
     return this._cents === other._cents && this._currency === other._currency;
   }
 
+  amountAsDecimalString(): string {
+    return this.amount.toFixed(2);
+  }
+
   // ---------- Helpers ----------
   private assertSameCurrency(other: Money) {
     if (this._currency !== other._currency) {

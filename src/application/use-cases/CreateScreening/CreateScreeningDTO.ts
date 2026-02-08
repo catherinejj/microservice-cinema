@@ -2,7 +2,9 @@ export class CreateScreeningInput {
   movieId: string;
   roomId: string;
   startsAt: Date;
-  endsAt: Date;
+
+  extraMinutes?: number;
+
   basePrice: number;
   currency: string;
 }

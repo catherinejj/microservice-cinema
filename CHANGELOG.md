@@ -1,5 +1,25 @@
 # Changelog
 
+## v0.6.0
+
+- Screening feature extended:
+  - New endpoint: GET /screenings/:id
+  - Returns full aggregated screening details:
+    - screening time slot
+    - price
+    - movie (title, duration, posterUrl) via external microservice
+    - cinema information
+    - room information
+
+- New use-case:
+  - GetScreeningByIdUseCase
+
+- Microservices integration reinforced:
+  - MovieCatalog used for runtime data enrichment
+  - No local movie persistence
+
+- API ready for frontend screening card display
+
 ## v0.5.0
 
 - Security layer implemented:
