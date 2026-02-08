@@ -5,10 +5,13 @@ import { GetSeatByIdUseCase } from "../../application/use-cases/GetSeatById/GetS
 import { ListSeatsByRoomUseCase } from "../../application/use-cases/ListSeatsByRoomUseCase/ListSeatsByRoomUseCase";
 import { UpdateSeatUseCase } from "../../application/use-cases/UpdateSeat/UpdateSeatUseCase";
 import { DeleteSeatUseCase } from "../../application/use-cases/DeleteSeat/DeleteSeatUseCase";
+import { CreateSeatUseCase } from "../../application/use-cases/CreateSeat/CreateSeatUseCase";
 
 import { UpdateSeatRequestDto } from "../dto/UpdateSeatRequestDto";
 import { UpdateSeatResponseDto } from "../dto/UpdateSeatResponseDto";
 import { DeleteSeatResponseDto } from "../dto/DeleteSeatResponseDto";
+import { CreateSeatRequestDto } from "../dto/CreateSeatRequestDto";
+import { CreateSeatResponseDto } from "../dto/CreateSeatResponseDto";
 
 import { AuthGuard } from "../auth/auth.guard";
 import { RolesGuard } from "../auth/roles.guard";
@@ -21,8 +24,24 @@ export class SeatController {
     private readonly getSeatById: GetSeatByIdUseCase,
     private readonly listSeatsByRoom: ListSeatsByRoomUseCase,
     private readonly updateSeat: UpdateSeatUseCase,
-    private readonly deleteSeat: DeleteSeatUseCase
+    private readonly deleteSeat: DeleteSeatUseCase,
+    private readonly createSeat: CreateSeatUseCase
   ) {}
+
+  @Post()
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles("admin")
+  @ApiBody({ type: CreateSeatRequestDto })
+  @ApiCreatedResponse({ type: CreateSeatResponseDto })
+  async create(@Body() body: CreateSeatRequestDto): Promise<CreateSeatResponseDto> {
+    const out = await this.createSeat.execute({
+      roomId: body.roomId,
+      row: body.row,
+      number: body.number,
+    });
+
+    return { id: out.id, roomId: body.roomId, row: body.row, number: body.number };
+  }
 
   @Get(":id")
   @ApiParam({ name: "id", type: String })
@@ -54,7 +73,7 @@ export class SeatController {
       number: body.number,
     });
   }
-  
+
   @Delete(":id")
   @UseGuards(AuthGuard, RolesGuard)
   @Roles("admin")

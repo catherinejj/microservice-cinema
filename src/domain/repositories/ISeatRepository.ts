@@ -1,7 +1,7 @@
 import { Seat } from "../entities/Seat";
 
 export interface ISeatRepository {
-  create(seat: Seat): Promise<void>;
+  create(seat: Seat): Promise<string>;
   createMany(seats: Seat[]): Promise<number>;
 
   findById(id: string): Promise<Seat | null>;

@@ -7,14 +7,17 @@ import { PrismaService } from "../../../prisma/prisma.service";
 export class PrismaSeatRepository implements ISeatRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(seat: Seat): Promise<void> {
-    await this.prisma.seat.create({
+  async create(seat: Seat): Promise<string> {
+    const created = await this.prisma.seat.create({
       data: {
         roomId: seat.roomId,
         row: seat.row,
         number: seat.number,
       },
+      select: { id: true },
     });
+
+    return created.id;
   }
 
   async createMany(seats: Seat[]): Promise<number> {

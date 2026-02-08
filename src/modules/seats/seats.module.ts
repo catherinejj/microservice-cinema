@@ -9,6 +9,8 @@ import { GetSeatByIdUseCase } from "../../application/use-cases/GetSeatById/GetS
 import { ListSeatsByRoomUseCase } from "../../application/use-cases/ListSeatsByRoomUseCase/ListSeatsByRoomUseCase";
 import { UpdateSeatUseCase } from "../../application/use-cases/UpdateSeat/UpdateSeatUseCase";
 import { DeleteSeatUseCase } from "../../application/use-cases/DeleteSeat/DeleteSeatUseCase";
+import { CreateSeatUseCase } from "src/application/use-cases/CreateSeat/CreateSeatUseCase";
+import { PrismaRoomRepository } from "src/infrastructure/database/repositories/PrismaRoomRepository";
 
 @Module({
   controllers: [SeatController],
@@ -16,8 +18,10 @@ import { DeleteSeatUseCase } from "../../application/use-cases/DeleteSeat/Delete
     PrismaService,
 
     { provide: "ISeatRepository", useClass: PrismaSeatRepository },
+    { provide: "IRoomRepository", useClass: PrismaRoomRepository },
 
     GetSeatByIdUseCase,
+    CreateSeatUseCase,
     ListSeatsByRoomUseCase,
     UpdateSeatUseCase,
     DeleteSeatUseCase,
