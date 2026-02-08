@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
 import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiTags } from "@nestjs/swagger";
 
 import { GetSeatByIdUseCase } from "../../application/use-cases/GetSeatById/GetSeatByIdUseCase";
@@ -13,10 +13,6 @@ import { DeleteSeatResponseDto } from "../dto/DeleteSeatResponseDto";
 import { CreateSeatRequestDto } from "../dto/CreateSeatRequestDto";
 import { CreateSeatResponseDto } from "../dto/CreateSeatResponseDto";
 
-import { AuthGuard } from "../auth/auth.guard";
-import { RolesGuard } from "../auth/roles.guard";
-import { Roles } from "../auth/roles.decorator";
-
 @ApiTags("seats")
 @Controller("seats")
 export class SeatController {
@@ -25,12 +21,10 @@ export class SeatController {
     private readonly listSeatsByRoom: ListSeatsByRoomUseCase,
     private readonly updateSeat: UpdateSeatUseCase,
     private readonly deleteSeat: DeleteSeatUseCase,
-    private readonly createSeat: CreateSeatUseCase
+    private readonly createSeat: CreateSeatUseCase,
   ) {}
 
   @Post()
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles("admin")
   @ApiBody({ type: CreateSeatRequestDto })
   @ApiCreatedResponse({ type: CreateSeatResponseDto })
   async create(@Body() body: CreateSeatRequestDto): Promise<CreateSeatResponseDto> {
@@ -58,8 +52,6 @@ export class SeatController {
   }
 
   @Patch(":id")
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles("admin")
   @ApiParam({ name: "id", type: String })
   @ApiBody({ type: UpdateSeatRequestDto })
   @ApiOkResponse({ type: UpdateSeatResponseDto })
@@ -75,8 +67,6 @@ export class SeatController {
   }
 
   @Delete(":id")
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles("admin")
   @ApiParam({ name: "id", type: String })
   @ApiOkResponse({ type: DeleteSeatResponseDto })
   async remove(@Param("id") id: string): Promise<DeleteSeatResponseDto> {
