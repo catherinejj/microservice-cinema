@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.6.1
+Maintenance:
+  - Align Node/PostgreSQL/Prisma versions with production environment
+  - Rename Swagger DTO class naming (DTO -> Dto) for consistency
+
 ## v0.6.0
 
 - Screening feature extended:

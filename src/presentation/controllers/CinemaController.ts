@@ -8,7 +8,7 @@ import { UpdateCinemaUseCase } from "../../application/use-cases/UpdateCinema/Up
 import { DeleteCinemaUseCase } from "../../application/use-cases/DeleteCinema/DeleteCinemaUseCase";
 
 import { CreateCinemaRequestDto } from "../dto/CreateCinemaRequestDto";
-import { CreateCinemaResponseDTO } from "../dto/CreateCinemaResponseDto";
+import { CreateCinemaResponseDto } from "../dto/CreateCinemaResponseDto";
 import { GetCinemaByIdResponseDto } from "../dto/GetCinemaByIdResponseDto";
 import { UpdateCinemaRequestDto } from "../dto/UpdateCinemaRequestDto";
 import { UpdateCinemaResponseDto } from "../dto/UpdateCinemaResponseDto";
@@ -33,8 +33,8 @@ export class CinemaController {
   @UseGuards(AuthGuard, RolesGuard)
   @Roles("admin")
   @ApiBody({ type: CreateCinemaRequestDto })
-  @ApiCreatedResponse({ type: CreateCinemaResponseDTO })
-  async create(@Body() body: CreateCinemaRequestDto): Promise<CreateCinemaResponseDTO> {
+  @ApiCreatedResponse({ type: CreateCinemaResponseDto })
+  async create(@Body() body: CreateCinemaRequestDto): Promise<CreateCinemaResponseDto> {
     return this.createCinema.execute(body);
   }
 

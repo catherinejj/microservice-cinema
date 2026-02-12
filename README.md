@@ -10,7 +10,7 @@ Les films sont gérés par un service externe (Movie Service).
 ## 🚀 Stack technique
 - NestJS
 - Prisma
-- PostgreSQL
+- PostgreSQL 13
 - Clean Architecture
 - Swagger
 - Guards (Auth + Roles)
@@ -18,6 +18,10 @@ Les films sont gérés par un service externe (Movie Service).
 ---
 
 ## 📦 Installation
+
+Prérequis:
+- Node.js 18.x
+- PostgreSQL 13.x
 
 ```bash
 npm install
@@ -223,3 +227,6 @@ npx prisma migrate reset
 - application layer
 - presentation layer
 - Mapping Prisma ↔ Domain respecté
+
+## Author
+Catherine Jules en février 2026.
