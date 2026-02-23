@@ -84,7 +84,22 @@ export class PrismaScreeningRepository implements IScreeningRepository {
 
     return !!found;
   }
+  async findAll(): Promise<Screening[]> {
+    const rows = await this.prisma.screening.findMany({
+      orderBy: { startsAt: "asc" },
+    });
 
+    return rows.map((r) => this.toDomain(r));
+  }
+
+  async findByMovieId(movieId: string): Promise<Screening[]> {
+    const rows = await this.prisma.screening.findMany({
+      where: { movieId },
+      orderBy: { startsAt: "asc" },
+    });
+
+    return rows.map((r) => this.toDomain(r));
+  }
   private toDomain(row: {
     id: string;
     roomId: string;

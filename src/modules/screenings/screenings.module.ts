@@ -14,6 +14,8 @@ import { ListScreeningsByRoomUseCase } from "../../application/use-cases/ListScr
 import { UpdateScreeningUseCase } from "../../application/use-cases/UpdateScreening/UpdateScreeningUseCase";
 import { DeleteScreeningUseCase } from "../../application/use-cases/DeleteScreening/DeleteScreeningUseCase";
 import { GetScreeningByIdUseCase } from "src/application/use-cases/GetScreeningDetailsById/GetScreeningByIdUseCase";
+import { ListAllScreeningsUseCase } from "src/application/use-cases/ListAllScreenings/ListAllScreeningsUseCase";
+import { ListScreeningsByMovieUseCase } from "src/application/use-cases/ListScreeningsByMovie/ListScreeningsByMovieUseCase";
 
 @Module({
   controllers: [ScreeningController],
@@ -36,6 +38,8 @@ import { GetScreeningByIdUseCase } from "src/application/use-cases/GetScreeningD
     UpdateScreeningUseCase,
     DeleteScreeningUseCase,
     GetScreeningByIdUseCase,
+    ListAllScreeningsUseCase,
+    ListScreeningsByMovieUseCase,
   ],
 })
 export class ScreeningsModule {}

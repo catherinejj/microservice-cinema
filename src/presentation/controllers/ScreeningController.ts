@@ -6,6 +6,8 @@ import { ListScreeningsByRoomUseCase } from "../../application/use-cases/ListScr
 import { UpdateScreeningUseCase } from "../../application/use-cases/UpdateScreening/UpdateScreeningUseCase";
 import { DeleteScreeningUseCase } from "../../application/use-cases/DeleteScreening/DeleteScreeningUseCase";
 import { GetScreeningByIdUseCase } from "../../application/use-cases/GetScreeningDetailsById/GetScreeningByIdUseCase";
+import { ListScreeningsByMovieUseCase } from "../../application/use-cases/ListScreeningsByMovie/ListScreeningsByMovieUseCase";
+import { ListAllScreeningsUseCase } from "../../application/use-cases/ListAllScreenings/ListAllScreeningsUseCase";
 
 import { CreateScreeningRequestDto } from "../dto/CreateScreeningRequestDto";
 import { UpdateScreeningRequestDto } from "../dto/UpdateScreeningRequestDto";
@@ -22,7 +24,9 @@ export class ScreeningController {
     private readonly listByRoom: ListScreeningsByRoomUseCase,
     private readonly updateScreening: UpdateScreeningUseCase,
     private readonly deleteScreening: DeleteScreeningUseCase,
-    private readonly getById: GetScreeningByIdUseCase
+    private readonly getById: GetScreeningByIdUseCase,
+    private readonly listAll: ListAllScreeningsUseCase,
+    private readonly listByMovie: ListScreeningsByMovieUseCase
   ) {}
 
   @Post()
@@ -37,6 +41,22 @@ export class ScreeningController {
       basePrice: body.basePrice,
       currency: body.currency,
     });
+  }
+
+  @Get()
+  @ApiOkResponse({ type: [ScreeningDetailsResponseDto] })
+  async listAllScreenings(): Promise<ScreeningDetailsResponseDto[]> {
+    const list = await this.listAll.execute();
+
+    return list.map((data) => ({
+      id: data.id,
+      startsAt: data.startsAt.toISOString(),
+      endsAt: data.endsAt.toISOString(),
+      price: data.price,
+      movie: data.movie,
+      cinema: data.cinema,
+      room: data.room,
+    }));
   }
 
   @Get(":id")
@@ -54,6 +74,23 @@ export class ScreeningController {
       cinema: data.cinema,
       room: data.room,
     };
+  }
+
+  @Get("movie/:movieId")
+  @ApiParam({ name: "movieId", type: String })
+  @ApiOkResponse({ type: [ScreeningDetailsResponseDto] })
+  async listByMovieId(@Param("movieId") movieId: string): Promise<ScreeningDetailsResponseDto[]> {
+    const list = await this.listByMovie.execute({ movieId });
+
+    return list.map((data) => ({
+      id: data.id,
+      startsAt: data.startsAt.toISOString(),
+      endsAt: data.endsAt.toISOString(),
+      price: data.price,
+      movie: data.movie,
+      cinema: data.cinema,
+      room: data.room,
+    }));
   }
 
   @Get("room/:roomId")

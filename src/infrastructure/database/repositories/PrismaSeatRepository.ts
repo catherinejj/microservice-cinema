@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import type { ISeatRepository } from "../../../domain/repositories";
 import { Seat } from "../../../domain/entities/Seat";
 import { PrismaService } from "../../../prisma/prisma.service";
-
+       
 @Injectable()
 export class PrismaSeatRepository implements ISeatRepository {
   constructor(private readonly prisma: PrismaService) {}
