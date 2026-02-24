@@ -25,8 +25,8 @@ export class ListAllScreeningsUseCase {
     private readonly movieCatalog: MovieCatalogService
   ) {}
 
-  async execute(): Promise<ScreeningAggregated[]> {
-    const screenings = await this.screeningRepo.findAll();
+  async execute(filters?: ScreeningFilters): Promise<ScreeningAggregated[]> {
+    const screenings = await this.screeningRepo.findAll(filters);
 
     const out: ScreeningAggregated[] = [];
 

@@ -27,9 +27,14 @@ export class ListScreeningsByMovieUseCase {
   ) {}
 
   async execute(dto: ListScreeningsByMovieDTO): Promise<ScreeningAggregated[]> {
-    const { movieId } = dto;
+    
+    const { movieId, fromDate, toDate, hasAvailableSeats } = dto;
 
-    const screenings = await this.screeningRepo.findByMovieId(movieId);
+    const screenings = await this.screeningRepo.findByMovieId(movieId, {
+      fromDate,
+      toDate,
+      hasAvailableSeats,
+    });
 
     const out: ScreeningAggregated[] = [];
 

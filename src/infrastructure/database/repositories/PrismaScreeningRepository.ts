@@ -84,23 +84,25 @@ export class PrismaScreeningRepository implements IScreeningRepository {
 
     return !!found;
   }
-  async findAll(): Promise<Screening[]> {
+  async findAll(filters?: ScreeningFilters): Promise<Screening[]> {
     const rows = await this.prisma.screening.findMany({
+      where: this.buildWhereClause(undefined, filters),
       orderBy: { startsAt: "asc" },
     });
 
     return rows.map((r) => this.toDomain(r));
   }
 
-  async findByMovieId(movieId: string): Promise<Screening[]> {
+  async findByMovieId(movieId: string, filters?: ScreeningFilters): Promise<Screening[]> {
     const rows = await this.prisma.screening.findMany({
-      where: { movieId },
+      where: this.buildWhereClause(movieId, filters),
       orderBy: { startsAt: "asc" },
     });
 
     return rows.map((r) => this.toDomain(r));
   }
-    async findMovieIdsByCinemaId(cinemaId: string): Promise<string[]> {
+
+  async findMovieIdsByCinemaId(cinemaId: string): Promise<string[]> {
     const rows = await this.prisma.screening.findMany({
       where: {
         room: {
@@ -113,6 +115,29 @@ export class PrismaScreeningRepository implements IScreeningRepository {
 
     return rows.map((r) => r.movieId);
   }
+  
+  private buildWhereClause(movieId?: string, filters?: ScreeningFilters) {
+    const where: any = {};
+
+    if (movieId) {
+      where.movieId = movieId;
+    }
+
+    if (filters?.fromDate) {
+      where.startsAt = { gte: filters.fromDate };
+    }
+
+    if (filters?.toDate) {
+      where.endsAt = { lte: filters.toDate };
+    }
+
+    if (filters?.hasAvailableSeats !== undefined) {
+      where.capacitySeat = filters.hasAvailableSeats ? { gt: 0 } : { equals: 0 };
+    }
+
+    return where;
+  }
+
   private toDomain(row: {
     id: string;
     roomId: string;

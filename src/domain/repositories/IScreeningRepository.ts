@@ -1,6 +1,12 @@
 import { Screening } from "../entities/Screening";
 import { TimeRange } from "../value-objects/TimeRange";
 
+export interface ScreeningFilters {
+  fromDate?: Date;
+  toDate?: Date;
+  hasAvailableSeats?: boolean; // capacitySeat > 0 (decremented by booking service)
+}
+
 export interface IScreeningRepository {
   create(screening: Screening): Promise<string>;
   update(screening: Screening): Promise<void>;

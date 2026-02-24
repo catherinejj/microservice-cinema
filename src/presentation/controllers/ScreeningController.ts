@@ -45,8 +45,19 @@ export class ScreeningController {
 
   @Get()
   @ApiOkResponse({ type: [ScreeningDetailsResponseDto] })
-  async listAllScreenings(): Promise<ScreeningDetailsResponseDto[]> {
-    const list = await this.listAll.execute();
+  @ApiQuery({ name: "fromDate", required: false, type: String, example: "2026-02-08T00:00:00.000Z" })
+  @ApiQuery({ name: "toDate", required: false, type: String, example: "2026-02-10T23:59:59.000Z" })
+  @ApiQuery({ name: "hasAvailableSeats", required: false, type: Boolean })
+  async listAllScreenings(
+    @Query("fromDate") fromDate?: string,
+    @Query("toDate") toDate?: string,
+    @Query("hasAvailableSeats") hasAvailableSeats?: string,
+  ): Promise<ScreeningDetailsResponseDto[]> {
+    const list = await this.listAll.execute({
+      fromDate: fromDate ? new Date(fromDate) : undefined,
+      toDate: toDate ? new Date(toDate) : undefined,
+      hasAvailableSeats: hasAvailableSeats === "true" ? true : undefined,
+    });
 
     return list.map((data) => ({
       id: data.id,
@@ -79,8 +90,21 @@ export class ScreeningController {
   @Get("movie/:movieId")
   @ApiParam({ name: "movieId", type: String })
   @ApiOkResponse({ type: [ScreeningDetailsResponseDto] })
-  async listByMovieId(@Param("movieId") movieId: string): Promise<ScreeningDetailsResponseDto[]> {
-    const list = await this.listByMovie.execute({ movieId });
+  @ApiQuery({ name: "fromDate", required: false, type: String, example: "2026-02-08T00:00:00.000Z" })
+  @ApiQuery({ name: "toDate", required: false, type: String, example: "2026-02-10T23:59:59.000Z" })
+  @ApiQuery({ name: "hasAvailableSeats", required: false, type: Boolean })
+  async listByMovieId(
+    @Param("movieId") movieId: string,
+    @Query("fromDate") fromDate?: string,
+    @Query("toDate") toDate?: string,
+    @Query("hasAvailableSeats") hasAvailableSeats?: string,
+  ): Promise<ScreeningDetailsResponseDto[]> {
+    const list = await this.listByMovie.execute({
+      movieId,
+      fromDate: fromDate ? new Date(fromDate) : undefined,
+      toDate: toDate ? new Date(toDate) : undefined,
+      hasAvailableSeats: hasAvailableSeats === "true" ? true : undefined,
+    });
 
     return list.map((data) => ({
       id: data.id,
