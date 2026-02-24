@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import type { IScreeningRepository } from "../../../domain/repositories";
+import { ScreeningFilters } from "../../../domain/repositories/IScreeningRepository";
 import { Screening } from "../../../domain/entities/Screening";
 import { TimeRange } from "../../../domain/value-objects/TimeRange";
 import { Money } from "../../../domain/value-objects/Money";
@@ -87,18 +88,16 @@ export class PrismaScreeningRepository implements IScreeningRepository {
   async findAll(filters?: ScreeningFilters): Promise<Screening[]> {
     const rows = await this.prisma.screening.findMany({
       where: this.buildWhereClause(undefined, filters),
-      orderBy: { startsAt: "asc" },
+      orderBy: this.buildOrderByClause(filters),
     });
-
     return rows.map((r) => this.toDomain(r));
   }
 
   async findByMovieId(movieId: string, filters?: ScreeningFilters): Promise<Screening[]> {
     const rows = await this.prisma.screening.findMany({
       where: this.buildWhereClause(movieId, filters),
-      orderBy: { startsAt: "asc" },
+      orderBy: this.buildOrderByClause(filters),
     });
-
     return rows.map((r) => this.toDomain(r));
   }
 
@@ -119,23 +118,50 @@ export class PrismaScreeningRepository implements IScreeningRepository {
   private buildWhereClause(movieId?: string, filters?: ScreeningFilters) {
     const where: any = {};
 
-    if (movieId) {
-      where.movieId = movieId;
+    if (movieId) where.movieId = movieId;
+
+    // Filtres de date sur startsAt
+    if (filters?.fromDate || filters?.toDate) {
+      where.startsAt = {};
+      if (filters.fromDate) where.startsAt.gte = filters.fromDate;
+      if (filters.toDate) where.startsAt.lte = filters.toDate;
     }
 
-    if (filters?.fromDate) {
-      where.startsAt = { gte: filters.fromDate };
+    // Prix maximum (basePrice est en décimal ex: 10.50)
+    if (filters?.priceMax !== undefined) {
+      where.basePrice = { lte: filters.priceMax };
     }
 
-    if (filters?.toDate) {
-      where.endsAt = { lte: filters.toDate };
+    // Filtres liés à la room et au cinéma (mergés dans un seul objet room)
+    const roomFilter: any = {};
+
+    if (filters?.hasAvailableSeats === true) {
+      roomFilter.capacitySeat = { gt: 0 };
+    } else if (filters?.hasAvailableSeats === false) {
+      roomFilter.capacitySeat = { equals: 0 };
     }
 
-    if (filters?.hasAvailableSeats !== undefined) {
-      where.capacitySeat = filters.hasAvailableSeats ? { gt: 0 } : { equals: 0 };
+    const cinemaFilter: any = {};
+    if (filters?.cinemaId) cinemaFilter.id = filters.cinemaId;
+    if (filters?.cityName) {
+      cinemaFilter.city = { contains: filters.cityName, mode: "insensitive" };
+    }
+    if (Object.keys(cinemaFilter).length > 0) {
+      roomFilter.cinema = cinemaFilter;
+    }
+
+    if (Object.keys(roomFilter).length > 0) {
+      where.room = roomFilter;
     }
 
     return where;
+  }
+
+  /** Tri : startsAt (défaut) ou basePrice */
+  private buildOrderByClause(filters?: ScreeningFilters) {
+    const order = filters?.sortOrder ?? "asc";
+    if (filters?.sortBy === "price") return { basePrice: order };
+    return { startsAt: order };
   }
 
   private toDomain(row: {

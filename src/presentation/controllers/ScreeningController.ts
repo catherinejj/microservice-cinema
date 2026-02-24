@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
-import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiTags } from "@nestjs/swagger";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from "@nestjs/common";
+import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiQuery, ApiTags } from "@nestjs/swagger";
 
 import { CreateScreeningUseCase } from "../../application/use-cases/CreateScreening/CreateScreeningUseCase";
 import { ListScreeningsByRoomUseCase } from "../../application/use-cases/ListScreeningsByRoomUseCase/ListScreeningsByRoomUseCase";
@@ -45,18 +45,36 @@ export class ScreeningController {
 
   @Get()
   @ApiOkResponse({ type: [ScreeningDetailsResponseDto] })
-  @ApiQuery({ name: "fromDate", required: false, type: String, example: "2026-02-08T00:00:00.000Z" })
-  @ApiQuery({ name: "toDate", required: false, type: String, example: "2026-02-10T23:59:59.000Z" })
-  @ApiQuery({ name: "hasAvailableSeats", required: false, type: Boolean })
+  @ApiQuery({ name: "fromDate",          required: false, type: String,  example: "2026-02-25T00:00:00.000Z" })
+  @ApiQuery({ name: "toDate",            required: false, type: String,  example: "2026-02-26T23:59:59.000Z" })
+  @ApiQuery({ name: "hasAvailableSeats", required: false, type: Boolean, description: "true = places dispo, false = complet" })
+  @ApiQuery({ name: "cinemaId",          required: false, type: String,  description: "Filtrer par ID cinéma" })
+  @ApiQuery({ name: "cityName",          required: false, type: String,  example: "Paris", description: "Filtrer par ville (insensible à la casse)" })
+  @ApiQuery({ name: "priceMax",          required: false, type: Number,  example: 12,     description: "Prix max en euros" })
+  @ApiQuery({ name: "timeSlot",          required: false, enum: ["morning", "afternoon", "evening"], description: "morning=8-13h UTC, afternoon=13-17h UTC, evening=17-22h UTC" })
+  @ApiQuery({ name: "sortBy",            required: false, enum: ["startsAt", "price"],   description: "Champ de tri" })
+  @ApiQuery({ name: "sortOrder",         required: false, enum: ["asc", "desc"],          description: "Ordre de tri" })
   async listAllScreenings(
-    @Query("fromDate") fromDate?: string,
-    @Query("toDate") toDate?: string,
+    @Query("fromDate")          fromDate?: string,
+    @Query("toDate")            toDate?: string,
     @Query("hasAvailableSeats") hasAvailableSeats?: string,
+    @Query("cinemaId")          cinemaId?: string,
+    @Query("cityName")          cityName?: string,
+    @Query("priceMax")          priceMax?: string,
+    @Query("timeSlot")          timeSlot?: string,
+    @Query("sortBy")            sortBy?: string,
+    @Query("sortOrder")         sortOrder?: string,
   ): Promise<ScreeningDetailsResponseDto[]> {
     const list = await this.listAll.execute({
-      fromDate: fromDate ? new Date(fromDate) : undefined,
-      toDate: toDate ? new Date(toDate) : undefined,
-      hasAvailableSeats: hasAvailableSeats === "true" ? true : undefined,
+      fromDate:          fromDate  ? new Date(fromDate)  : undefined,
+      toDate:            toDate    ? new Date(toDate)    : undefined,
+      hasAvailableSeats: hasAvailableSeats === "true" ? true : hasAvailableSeats === "false" ? false : undefined,
+      cinemaId:          cinemaId  || undefined,
+      cityName:          cityName  || undefined,
+      priceMax:          priceMax  ? parseFloat(priceMax) : undefined,
+      timeSlot:          (timeSlot as any) || undefined,
+      sortBy:            (sortBy as any)   || undefined,
+      sortOrder:         (sortOrder as any) || undefined,
     });
 
     return list.map((data) => ({
@@ -90,20 +108,38 @@ export class ScreeningController {
   @Get("movie/:movieId")
   @ApiParam({ name: "movieId", type: String })
   @ApiOkResponse({ type: [ScreeningDetailsResponseDto] })
-  @ApiQuery({ name: "fromDate", required: false, type: String, example: "2026-02-08T00:00:00.000Z" })
-  @ApiQuery({ name: "toDate", required: false, type: String, example: "2026-02-10T23:59:59.000Z" })
+  @ApiQuery({ name: "fromDate",          required: false, type: String,  example: "2026-02-25T00:00:00.000Z" })
+  @ApiQuery({ name: "toDate",            required: false, type: String,  example: "2026-02-26T23:59:59.000Z" })
   @ApiQuery({ name: "hasAvailableSeats", required: false, type: Boolean })
+  @ApiQuery({ name: "cinemaId",          required: false, type: String })
+  @ApiQuery({ name: "cityName",          required: false, type: String,  example: "Paris" })
+  @ApiQuery({ name: "priceMax",          required: false, type: Number,  example: 12 })
+  @ApiQuery({ name: "timeSlot",          required: false, enum: ["morning", "afternoon", "evening"] })
+  @ApiQuery({ name: "sortBy",            required: false, enum: ["startsAt", "price"] })
+  @ApiQuery({ name: "sortOrder",         required: false, enum: ["asc", "desc"] })
   async listByMovieId(
     @Param("movieId") movieId: string,
-    @Query("fromDate") fromDate?: string,
-    @Query("toDate") toDate?: string,
+    @Query("fromDate")          fromDate?: string,
+    @Query("toDate")            toDate?: string,
     @Query("hasAvailableSeats") hasAvailableSeats?: string,
+    @Query("cinemaId")          cinemaId?: string,
+    @Query("cityName")          cityName?: string,
+    @Query("priceMax")          priceMax?: string,
+    @Query("timeSlot")          timeSlot?: string,
+    @Query("sortBy")            sortBy?: string,
+    @Query("sortOrder")         sortOrder?: string,
   ): Promise<ScreeningDetailsResponseDto[]> {
     const list = await this.listByMovie.execute({
       movieId,
-      fromDate: fromDate ? new Date(fromDate) : undefined,
-      toDate: toDate ? new Date(toDate) : undefined,
-      hasAvailableSeats: hasAvailableSeats === "true" ? true : undefined,
+      fromDate:          fromDate  ? new Date(fromDate)  : undefined,
+      toDate:            toDate    ? new Date(toDate)    : undefined,
+      hasAvailableSeats: hasAvailableSeats === "true" ? true : hasAvailableSeats === "false" ? false : undefined,
+      cinemaId:          cinemaId  || undefined,
+      cityName:          cityName  || undefined,
+      priceMax:          priceMax  ? parseFloat(priceMax) : undefined,
+      timeSlot:          (timeSlot as any)   || undefined,
+      sortBy:            (sortBy as any)     || undefined,
+      sortOrder:         (sortOrder as any)  || undefined,
     });
 
     return list.map((data) => ({

@@ -1,6 +1,3 @@
-export type ListScreeningsByMovieDTO = {
-  movieId: string;
-  fromDate?: Date;
-  toDate?: Date;
-  hasAvailableSeats?: boolean;
-};
+import { ScreeningFilters } from "../../../domain/repositories/IScreeningRepository";
+
+export type ListScreeningsByMovieDTO = { movieId: string } & ScreeningFilters;
