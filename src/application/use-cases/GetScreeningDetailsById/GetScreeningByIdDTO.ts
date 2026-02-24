@@ -6,6 +6,7 @@ export class GetScreeningByIdOutput {
   id: string;
   startsAt: Date;
   endsAt: Date;
+  extraMinutes: number;
 
   price: {
     amount: string;   // "11.00"

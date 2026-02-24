@@ -52,6 +52,7 @@ export class CreateScreeningUseCase {
       roomId: input.roomId,
       slot,
       price: Money.fromDecimal(input.basePrice, input.currency),
+      extraMinutes: extra,
     });
 
     const id = await this.screeningRepository.create(screening);

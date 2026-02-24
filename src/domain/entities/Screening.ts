@@ -10,12 +10,14 @@ export interface ScreeningProps {
   roomId: string;
   slot: TimeRange;
   price: Money;
+  extraMinutes?: number;
 }
 
 export class Screening {
   private readonly _id?: string; // optional tant que non persisté
   private readonly _movieId: string;
   private readonly _roomId: string;
+  private readonly _extraMinutes: number;
   private _slot: TimeRange;
   private _price: Money;
 
@@ -27,6 +29,7 @@ export class Screening {
     this._id = props.id;
     this._movieId = props.movieId;
     this._roomId = props.roomId;
+    this._extraMinutes = props.extraMinutes ?? 0;
     this._slot = props.slot;
     this._price = props.price;
   }
@@ -47,6 +50,10 @@ export class Screening {
 
   get roomId(): string {
     return this._roomId;
+  }
+
+  get extraMinutes(): number {
+    return this._extraMinutes;
   }
 
   get slot(): TimeRange {

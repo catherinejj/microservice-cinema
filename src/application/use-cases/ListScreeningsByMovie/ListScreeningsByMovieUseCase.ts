@@ -20,6 +20,7 @@ type ScreeningAggregated = {
   id: string;
   startsAt: Date;
   endsAt: Date;
+  extraMinutes: number;
   price: any; // tu peux typer Money si tu veux
   movie: any; // MovieSummaryDto
   cinema: any; // Cinema entity
@@ -65,6 +66,7 @@ export class ListScreeningsByMovieUseCase {
         id: s.id!,
         startsAt: s.slot.start,
         endsAt: s.slot.end,
+        extraMinutes: s.extraMinutes,
         price: {
           amount: s.price.amount.toFixed(2),
           currency: s.price.currency,

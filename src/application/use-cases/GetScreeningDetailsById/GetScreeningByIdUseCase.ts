@@ -38,11 +38,12 @@ export class GetScreeningByIdUseCase {
     return {
       id: screening.id as string,
       startsAt: screening.slot.start,
-        endsAt: screening.slot.end,
-        price: {
+      endsAt: screening.slot.end,
+      extraMinutes: screening.extraMinutes,
+      price: {
         amount: screening.price.amount.toFixed(2),
         currency: screening.price.currency,
-        },
+      },
       movie: {
         id: movie.id,
         title: movie.title,

@@ -63,6 +63,9 @@ export class ScreeningDetailsResponseDto {
   @ApiProperty({ example: "2026-02-08T20:07:00.000Z" })
   endsAt!: string;
 
+  @ApiProperty({ example: 9 })
+  extraMinutes!: number;
+
   @ApiProperty({ type: MoneyDto })
   price!: MoneyDto;
 

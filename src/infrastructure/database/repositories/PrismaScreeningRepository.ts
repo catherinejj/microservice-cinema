@@ -22,7 +22,7 @@ export class PrismaScreeningRepository implements IScreeningRepository {
         endsAt: screening.slot.end,
         basePrice: screening.price.amount as any,
         currency: screening.price.currency,
-        extraMinutes: 0,
+        extraMinutes: screening.extraMinutes,
       },
       select: { id: true },
     });
@@ -170,6 +170,7 @@ export class PrismaScreeningRepository implements IScreeningRepository {
     movieId: string;
     startsAt: Date;
     endsAt: Date;
+    extraMinutes: number | null;
     basePrice: any;
     currency: string;
   }): Screening {
@@ -182,6 +183,7 @@ export class PrismaScreeningRepository implements IScreeningRepository {
       movieId: row.movieId,
       slot,
       price,
+      extraMinutes: row.extraMinutes ?? 0,
     });
   }
 }
