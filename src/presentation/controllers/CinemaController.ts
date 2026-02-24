@@ -6,6 +6,7 @@ import { ListCinemasUseCase } from "../../application/use-cases/ListCinemas/List
 import { GetCinemaByIdUseCase } from "../../application/use-cases/GetCinemaById/GetCinemaByIdUseCase";
 import { UpdateCinemaUseCase } from "../../application/use-cases/UpdateCinema/UpdateCinemaUseCase";
 import { DeleteCinemaUseCase } from "../../application/use-cases/DeleteCinema/DeleteCinemaUseCase";
+import { ListMoviesByCinemaUseCase } from "../../application/use-cases/ListMoviesByCinema/ListMoviesByCinemaUseCase";
 
 import { CreateCinemaRequestDto } from "../dto/CreateCinemaRequestDto";
 import { CreateCinemaResponseDto } from "../dto/CreateCinemaResponseDto";
@@ -13,6 +14,7 @@ import { GetCinemaByIdResponseDto } from "../dto/GetCinemaByIdResponseDto";
 import { UpdateCinemaRequestDto } from "../dto/UpdateCinemaRequestDto";
 import { UpdateCinemaResponseDto } from "../dto/UpdateCinemaResponseDto";
 import { DeleteCinemaResponseDto } from "../dto/DeleteCinemaResponseDto";
+import { ListMoviesByCinemaResponseDto } from "../dto/ListMoviesByCinemaResponseDto";
 
 import { AuthGuard } from "../auth/auth.guard";
 import { RolesGuard } from "../auth/roles.guard";
@@ -26,7 +28,8 @@ export class CinemaController {
     private readonly listCinemas: ListCinemasUseCase,
     private readonly getCinemaById: GetCinemaByIdUseCase,
     private readonly updateCinema: UpdateCinemaUseCase,
-    private readonly deleteCinema: DeleteCinemaUseCase
+    private readonly deleteCinema: DeleteCinemaUseCase,
+    private readonly listMoviesByCinema: ListMoviesByCinemaUseCase,
   ) {}
 
   @Post()
@@ -49,6 +52,19 @@ export class CinemaController {
   @ApiOkResponse({ type: GetCinemaByIdResponseDto })
   async getById(@Param("id") id: string): Promise<GetCinemaByIdResponseDto> {
     return this.getCinemaById.execute({ id });
+  }
+
+    @Get(":cinemaId/movies")
+    @ApiParam({ name: "cinemaId", type: String })
+    @ApiOkResponse({ type: [ListMoviesByCinemaResponseDto] })
+  async listMovies(@Param("cinemaId") cinemaId: string): Promise<ListMoviesByCinemaResponseDto[]> {
+    const movies = await this.listMoviesByCinema.execute({ cinemaId });
+
+    return movies.map((m) => ({
+      id: m.id,
+      title: m.title,
+      posterUrl: m.posterUrl,
+    }));
   }
 
   @Patch(":id")

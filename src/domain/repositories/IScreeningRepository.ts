@@ -7,6 +7,7 @@ export interface IScreeningRepository {
 
   findAll(): Promise<Screening[]>;
   findByMovieId(movieId: string): Promise<Screening[]>;
+  findMovieIdsByCinemaId(cinemaId: string): Promise<string[]>;
 
   findById(id: string): Promise<Screening | null>;
   listByRoomId(roomId: string, from?: Date, to?: Date): Promise<Screening[]>;

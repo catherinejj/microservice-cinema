@@ -100,6 +100,19 @@ export class PrismaScreeningRepository implements IScreeningRepository {
 
     return rows.map((r) => this.toDomain(r));
   }
+    async findMovieIdsByCinemaId(cinemaId: string): Promise<string[]> {
+    const rows = await this.prisma.screening.findMany({
+      where: {
+        room: {
+          cinemaId,
+        },
+      },
+      select: { movieId: true },
+      distinct: ["movieId"],
+    });
+
+    return rows.map((r) => r.movieId);
+  }
   private toDomain(row: {
     id: string;
     roomId: string;
