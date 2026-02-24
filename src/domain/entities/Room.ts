@@ -29,8 +29,8 @@ export class Room {
       throw new Error("Room: name is required");
     }
 
-    if (!Number.isInteger(props.capacitySeat) || props.capacitySeat <= 0) {
-      throw new Error("Room: capacitySeat must be an integer > 0");
+    if (!Number.isInteger(props.capacitySeat) || props.capacitySeat < 0) {
+      throw new Error("Room: capacitySeat must be a non-negative integer");
     }
 
     // IMPORTANT : on ne force PAS l'id ici, Prisma le crée à l'insert

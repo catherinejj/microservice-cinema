@@ -17,10 +17,11 @@ async function main() {
    * On garde une liste locale "movies" uniquement pour calculer endsAt.
    * On ne crée plus de table Movie => aucun prisma.movie ici.
    */
+  // IDs réels du service movie-cinema.la4.fr
   const movies: SeedMovie[] = [
-    { id: "movie_1", title: "Alien", duration: 117 },
-    { id: "movie_2", title: "Blade Runner", duration: 117 },
-    { id: "movie_3", title: "Spirited Away", duration: 125 },
+    { id: "cmm0emqmj000028ocnm52ie1e", title: "Inception", duration: 148 },
+    { id: "cmm0emqnu000228ocmqii59jw", title: "The Dark Knight", duration: 152 },
+    { id: "cmm0emqnn000128oc8vbyu8m9", title: "The Godfather", duration: 175 },
   ];
 
   const movieById = new Map(movies.map((m) => [m.id, m] as const));
@@ -95,6 +96,59 @@ async function main() {
     create: { id: "room_2", name: "Salle 2", cinemaId: cinema.id, capacitySeat: 20 },
   });
 
+  // Salle complet (capacitySeat = 0) pour tester le filtre hasAvailableSeats
+  const room3 = await prisma.room.upsert({
+    where: { id: "room_3" },
+    update: { name: "Salle 3 (complet)", cinemaId: cinema.id, capacitySeat: 0 },
+    create: { id: "room_3", name: "Salle 3 (complet)", cinemaId: cinema.id, capacitySeat: 0 },
+  });
+
+  // -------------------------
+  // CINEMA 2 — Paris (pour tester cityName)
+  // -------------------------
+  const cinema2 = await prisma.cinema.upsert({
+    where: { id: "cinema_2" },
+    update: {
+      name: "Cinéma Étoile",
+      city: "Paris",
+      address: "10 avenue des Champs-Élysées",
+      zipCode: "75008",
+      phoneNumber: "+33 1 00 00 00 00",
+    },
+    create: {
+      id: "cinema_2",
+      name: "Cinéma Étoile",
+      city: "Paris",
+      address: "10 avenue des Champs-Élysées",
+      zipCode: "75008",
+      phoneNumber: "+33 1 00 00 00 00",
+    },
+  });
+
+  const openingHours2 = [
+    { day: "MON", openTime: "10:00", closeTime: "23:00", isClosed: false },
+    { day: "TUE", openTime: "10:00", closeTime: "23:00", isClosed: false },
+    { day: "WED", openTime: "10:00", closeTime: "23:00", isClosed: false },
+    { day: "THU", openTime: "10:00", closeTime: "23:00", isClosed: false },
+    { day: "FRI", openTime: "10:00", closeTime: "00:30", isClosed: false },
+    { day: "SAT", openTime: "10:00", closeTime: "00:30", isClosed: false },
+    { day: "SUN", openTime: "10:00", closeTime: "22:00", isClosed: false },
+  ] as const;
+
+  for (const oh of openingHours2) {
+    await prisma.openingHours.upsert({
+      where: { cinemaId_day: { cinemaId: cinema2.id, day: oh.day } },
+      update: { openTime: oh.openTime, closeTime: oh.closeTime, isClosed: oh.isClosed },
+      create: { cinemaId: cinema2.id, day: oh.day, openTime: oh.openTime, closeTime: oh.closeTime, isClosed: oh.isClosed },
+    });
+  }
+
+  const room4 = await prisma.room.upsert({
+    where: { id: "room_4" },
+    update: { name: "Grande Salle", cinemaId: cinema2.id, capacitySeat: 50 },
+    create: { id: "room_4", name: "Grande Salle", cinemaId: cinema2.id, capacitySeat: 50 },
+  });
+
   // -------------------------
   // SEATS
   // -------------------------
@@ -137,30 +191,74 @@ async function main() {
 
   const screenings = [
     {
+      // Inception — Salle 1 — places disponibles (capacitySeat: 30)
       id: "scr_1",
       roomId: room1.id,
-      movieId: "movie_1",
-      startsAt: at(0, 14, 0),
+      movieId: "cmm0emqmj000028ocnm52ie1e",
+      startsAt: at(1, 14, 0),
       extraMinutes: 10,
-      basePrice: "9.50",
+      basePrice: "10.50",
       currency: "EUR",
     },
     {
+      // The Dark Knight — Salle 2 — places disponibles (capacitySeat: 20)
       id: "scr_2",
-      roomId: room1.id,
-      movieId: "movie_2",
-      startsAt: at(0, 18, 0),
+      roomId: room2.id,
+      movieId: "cmm0emqnu000228ocmqii59jw",
+      startsAt: at(1, 18, 0),
       extraMinutes: 10,
       basePrice: "11.00",
       currency: "EUR",
     },
     {
+      // The Godfather — Salle 1 — places disponibles (capacitySeat: 30)
       id: "scr_3",
-      roomId: room2.id,
-      movieId: "movie_3",
-      startsAt: at(1, 16, 0),
+      roomId: room1.id,
+      movieId: "cmm0emqnn000128oc8vbyu8m9",
+      startsAt: at(2, 16, 0),
+      extraMinutes: 10,
+      basePrice: "9.00",
+      currency: "EUR",
+    },
+    {
+      // The Godfather — Salle 3 COMPLET — pour tester hasAvailableSeats=false (capacitySeat: 0)
+      id: "scr_4",
+      roomId: room3.id,
+      movieId: "cmm0emqnn000128oc8vbyu8m9",
+      startsAt: at(2, 20, 0),
       extraMinutes: 10,
       basePrice: "8.00",
+      currency: "EUR",
+    },
+    // --- Cinéma Étoile (Paris) — pour tester cityName=Paris, cinemaId, priceMax ---
+    {
+      // Inception — Paris — matin (10h UTC) — prix bas pour tester priceMax
+      id: "scr_5",
+      roomId: room4.id,
+      movieId: "cmm0emqmj000028ocnm52ie1e",
+      startsAt: at(1, 9, 0),   // 9h UTC = 10h CET (morning)
+      extraMinutes: 10,
+      basePrice: "7.50",
+      currency: "EUR",
+    },
+    {
+      // The Dark Knight — Paris — après-midi (14h UTC) — prix moyen
+      id: "scr_6",
+      roomId: room4.id,
+      movieId: "cmm0emqnu000228ocmqii59jw",
+      startsAt: at(1, 14, 0),  // 14h UTC = 15h CET (afternoon)
+      extraMinutes: 10,
+      basePrice: "9.50",
+      currency: "EUR",
+    },
+    {
+      // The Godfather — Paris — soir (18h UTC) — prix élevé
+      id: "scr_7",
+      roomId: room4.id,
+      movieId: "cmm0emqnn000128oc8vbyu8m9",
+      startsAt: at(2, 18, 0),  // 18h UTC = 19h CET (evening)
+      extraMinutes: 10,
+      basePrice: "13.00",
       currency: "EUR",
     },
   ] as const;
@@ -198,11 +296,11 @@ async function main() {
   }
 
   console.log("✅ Seed terminé :", {
-    cinema: { id: cinema.id, name: cinema.name },
-    rooms: 2,
+    cinemas: 2,
+    rooms: 4,
     seats: seatsRoom1.length + seatsRoom2.length,
     screenings: screenings.length,
-    note: "Movies are external (not stored in this DB).",
+    note: "Movies are external (not stored in this DB). IDs from movie-cinema.la4.fr",
   });
 }
 
