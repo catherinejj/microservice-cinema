@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiQuery, ApiTags } from "@nestjs/swagger";
 
 import { CreateScreeningUseCase } from "../../application/use-cases/CreateScreening/CreateScreeningUseCase";
@@ -15,6 +15,9 @@ import { UpdateScreeningResponseDto } from "../dto/UpdateScreeningResponseDto";
 import { DeleteScreeningResponseDto } from "../dto/DeleteScreeningResponseDto";
 import { ScreeningDetailsResponseDto } from "../dto/ScreeningDetailsResponseDto";
 import { ScreeningBookingResponseDto } from "../dto/ScreeningBookingResponseDto";
+import { AuthGuard } from "../auth/auth.guard";
+import { RolesGuard } from "../auth/roles.guard";
+import { Roles } from "../auth/roles.decorator";
 
 @ApiTags("screenings")
 @Controller("screenings")
@@ -29,20 +32,25 @@ export class ScreeningController {
     private readonly listByMovie: ListScreeningsByMovieUseCase
   ) {}
 
-  @Post()
-  @ApiBody({ type: CreateScreeningRequestDto })
-  @ApiCreatedResponse({ description: "Screening created" })
-  async create(@Body() body: CreateScreeningRequestDto) {
-    return this.createScreening.execute({
-      movieId: body.movieId,
-      roomId: body.roomId,
-      startsAt: new Date(body.startsAt),
-      extraMinutes: body.extraMinutes,
-      basePrice: body.basePrice,
-      currency: body.currency,
-    });
-  }
 
+  /*@Get()
+  @ApiOkResponse({ type: [ScreeningDetailsResponseDto] })
+  async listAllScreeningsWithoutFilters(): Promise<ScreeningDetailsResponseDto[]> {
+    const list = await this.listAll.execute();
+
+    return list.map((data) => ({
+      id: data.id,
+      startsAt: data.startsAt.toISOString(),
+      endsAt: data.endsAt.toISOString(),
+      extraMinutes: data.extraMinutes,
+      price: data.price,
+      movie: data.movie,
+      cinema: data.cinema,
+      room: data.room,
+    }));
+  }$*/
+
+  /*@Get("search")*/
   @Get()
   @ApiOkResponse({ type: [ScreeningDetailsResponseDto] })
   @ApiQuery({ name: "fromDate",          required: false, type: String,  example: "2026-02-25T00:00:00.000Z" })
@@ -183,7 +191,25 @@ export class ScreeningController {
     };
   }
 
+  @Post()
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles("ADMIN")
+  @ApiBody({ type: CreateScreeningRequestDto })
+  @ApiCreatedResponse({ description: "Screening created" })
+  async create(@Body() body: CreateScreeningRequestDto) {
+    return this.createScreening.execute({
+      movieId: body.movieId,
+      roomId: body.roomId,
+      startsAt: new Date(body.startsAt),
+      extraMinutes: body.extraMinutes,
+      basePrice: body.basePrice,
+      currency: body.currency,
+    });
+  }
+
   @Patch(":id")
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles("ADMIN")
   @ApiParam({ name: "id", type: String })
   @ApiOkResponse({ type: UpdateScreeningResponseDto })
   async update(
@@ -193,13 +219,15 @@ export class ScreeningController {
     return this.updateScreening.execute({
       id,
       startsAt: body.startsAt ? new Date(body.startsAt) : undefined,
-      endsAt: body.endsAt ? new Date(body.endsAt) : undefined,
+      extraMinutes: body.extraMinutes,
       basePrice: body.basePrice,
       currency: body.currency,
     });
   }
 
   @Delete(":id")
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles("ADMIN")
   @ApiParam({ name: "id", type: String })
   @ApiOkResponse({ type: DeleteScreeningResponseDto })
   async remove(@Param("id") id: string): Promise<DeleteScreeningResponseDto> {

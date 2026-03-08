@@ -2,7 +2,7 @@ export class UpdateScreeningInput {
   id: string;
 
   startsAt?: Date;
-  endsAt?: Date;
+  extraMinutes?: number;
 
   basePrice?: number;
   currency?: string;

@@ -1,13 +1,21 @@
 import { Inject, Injectable } from "@nestjs/common";
 import type { IScreeningRepository } from "../../../domain/repositories";
+import type { IMovieCatalog } from "../../ports/IMovieCatalog";
 import { TimeRange } from "../../../domain/value-objects/TimeRange";
 import { Money } from "../../../domain/value-objects/Money";
 import { UpdateScreeningInput, UpdateScreeningOutput } from "./UpdateScreeningDTO";
 import { UpdateScreeningValidator } from "./UpdateScreeningValidator";
 
+function addMinutes(date: Date, minutes: number): Date {
+  return new Date(date.getTime() + minutes * 60_000);
+}
+
 @Injectable()
 export class UpdateScreeningUseCase {
   constructor(
+    @Inject("IMovieCatalog")
+    private readonly movieCatalog: IMovieCatalog,
+
     @Inject("IScreeningRepository")
     private readonly screeningRepository: IScreeningRepository
   ) {}
@@ -20,9 +28,14 @@ export class UpdateScreeningUseCase {
     if (!screening) throw new Error(`Screening with ID ${input.id} not found`);
 
     // --- reschedule ---
-    if (input.startsAt !== undefined || input.endsAt !== undefined) {
+    const shouldRecomputeEnd =
+      input.startsAt !== undefined || input.extraMinutes !== undefined;
+    if (shouldRecomputeEnd) {
       const newStartsAt = input.startsAt ?? screening.slot.start;
-      const newEndsAt = input.endsAt ?? screening.slot.end;
+      const newExtraMinutes = input.extraMinutes ?? screening.extraMinutes;
+      const movie = await this.movieCatalog.getSummary(screening.movieId);
+      if (!movie) throw new Error(`Movie with ID ${screening.movieId} not found`);
+      const newEndsAt = addMinutes(newStartsAt, movie.duration + newExtraMinutes);
 
       const newSlot = TimeRange.of(newStartsAt, newEndsAt);
 
@@ -36,6 +49,9 @@ export class UpdateScreeningUseCase {
       }
 
       screening.reschedule(newSlot);
+      if (input.extraMinutes !== undefined) {
+        screening.changeExtraMinutes(input.extraMinutes);
+      }
     }
 
     // --- price ---

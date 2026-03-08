@@ -40,6 +40,7 @@ export class PrismaScreeningRepository implements IScreeningRepository {
         movieId: screening.movieId,
         startsAt: screening.slot.start,
         endsAt: screening.slot.end,
+        extraMinutes: screening.extraMinutes,
         basePrice: screening.price.amount as any,
         currency: screening.price.currency,
       },

@@ -32,15 +32,6 @@ export class CinemaController {
     private readonly listMoviesByCinema: ListMoviesByCinemaUseCase,
   ) {}
 
-  @Post()
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles("admin")
-  @ApiBody({ type: CreateCinemaRequestDto })
-  @ApiCreatedResponse({ type: CreateCinemaResponseDto })
-  async create(@Body() body: CreateCinemaRequestDto): Promise<CreateCinemaResponseDto> {
-    return this.createCinema.execute(body);
-  }
-
   @Get()
   @ApiOkResponse({ description: "List of cinemas" })
   async list() {
@@ -54,9 +45,9 @@ export class CinemaController {
     return this.getCinemaById.execute({ id });
   }
 
-    @Get(":cinemaId/movies")
-    @ApiParam({ name: "cinemaId", type: String })
-    @ApiOkResponse({ type: [ListMoviesByCinemaResponseDto] })
+  @Get(":cinemaId/movies")
+  @ApiParam({ name: "cinemaId", type: String })
+  @ApiOkResponse({ type: [ListMoviesByCinemaResponseDto] })
   async listMovies(@Param("cinemaId") cinemaId: string): Promise<ListMoviesByCinemaResponseDto[]> {
     const movies = await this.listMoviesByCinema.execute({ cinemaId });
 
@@ -67,9 +58,18 @@ export class CinemaController {
     }));
   }
 
+  @Post()
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles("ADMIN")
+  @ApiBody({ type: CreateCinemaRequestDto })
+  @ApiCreatedResponse({ type: CreateCinemaResponseDto })
+  async create(@Body() body: CreateCinemaRequestDto): Promise<CreateCinemaResponseDto> {
+    return this.createCinema.execute(body);
+  }
+
   @Patch(":id")
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles("admin")
+  @Roles("ADMIN")
   @ApiParam({ name: "id", type: String })
   @ApiOkResponse({ type: UpdateCinemaResponseDto })
   async update(
@@ -88,7 +88,7 @@ export class CinemaController {
 
   @Delete(":id")
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles("admin")
+  @Roles("ADMIN")
   @ApiParam({ name: "id", type: String })
   @ApiOkResponse({ type: DeleteCinemaResponseDto })
   async remove(@Param("id") id: string): Promise<DeleteCinemaResponseDto> {

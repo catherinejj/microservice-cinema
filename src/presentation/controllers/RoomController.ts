@@ -27,16 +27,6 @@ export class RoomController {
     private readonly deleteRoom: DeleteRoomUseCase
   ) {}
 
-
-  @Post()
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles("admin")
-  @ApiBody({ type: CreateRoomRequestDto })
-  @ApiCreatedResponse({ type: CreateRoomResponseDto })
-  async create(@Body() body: CreateRoomRequestDto): Promise<CreateRoomResponseDto> {
-    return this.createRoom.execute(body);
-  }
-
   @Get("cinema/:cinemaId")
   @ApiParam({ name: "cinemaId", type: String })
   @ApiOkResponse({ type: [RoomResponseDto] })
@@ -44,10 +34,19 @@ export class RoomController {
     const result = await this.listRoomsByCinema.execute({ cinemaId });
     return result.rooms;
   }
+  
+  @Post()
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles("ADMIN")
+  @ApiBody({ type: CreateRoomRequestDto })
+  @ApiCreatedResponse({ type: CreateRoomResponseDto })
+  async create(@Body() body: CreateRoomRequestDto): Promise<CreateRoomResponseDto> {
+    return this.createRoom.execute(body);
+  }
 
   @Patch(":id")
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles("admin")
+  @Roles("ADMIN")
   @ApiParam({ name: "id", type: String })
   @ApiOkResponse({ type: UpdateRoomResponseDto })
   async update(
@@ -59,7 +58,7 @@ export class RoomController {
 
   @Delete(":id")
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles("admin")
+  @Roles("ADMIN")
   @ApiParam({ name: "id", type: String })
   @ApiOkResponse({ type: DeleteRoomResponseDto })
   async remove(@Param("id") id: string): Promise<DeleteRoomResponseDto> {

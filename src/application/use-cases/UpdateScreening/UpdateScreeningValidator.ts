@@ -6,7 +6,9 @@ export class UpdateScreeningValidator {
 
     if (!input.id) errors.push("id is required");
 
-    const hasTime = input.startsAt !== undefined || input.endsAt !== undefined;
+    const hasTime =
+      input.startsAt !== undefined ||
+      input.extraMinutes !== undefined;
     const hasPrice = input.basePrice !== undefined || input.currency !== undefined;
 
     if (!hasTime && !hasPrice) {
@@ -14,7 +16,11 @@ export class UpdateScreeningValidator {
     }
 
     if (input.startsAt && isNaN(input.startsAt.getTime())) errors.push("startsAt is invalid");
-    if (input.endsAt && isNaN(input.endsAt.getTime())) errors.push("endsAt is invalid");
+    if (input.extraMinutes !== undefined) {
+      if (!Number.isInteger(input.extraMinutes) || input.extraMinutes < 0) {
+        errors.push("extraMinutes must be an integer >= 0");
+      }
+    }
 
     if (input.basePrice !== undefined && typeof input.basePrice !== "number") {
       errors.push("basePrice must be a number");

@@ -17,7 +17,7 @@ export class Screening {
   private readonly _id?: string; // optional tant que non persisté
   private readonly _movieId: string;
   private readonly _roomId: string;
-  private readonly _extraMinutes: number;
+  private _extraMinutes: number;
   private _slot: TimeRange;
   private _price: Money;
 
@@ -74,6 +74,13 @@ export class Screening {
 
   changePrice(newPrice: Money) {
     this._price = newPrice;
+  }
+
+  changeExtraMinutes(newExtraMinutes: number) {
+    if (!Number.isInteger(newExtraMinutes) || newExtraMinutes < 0) {
+      throw new Error("Screening: extraMinutes must be an integer >= 0");
+    }
+    this._extraMinutes = newExtraMinutes;
   }
 
   reschedule(newSlot: TimeRange) {

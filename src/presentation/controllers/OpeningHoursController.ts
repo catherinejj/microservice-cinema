@@ -27,15 +27,6 @@ export class OpeningHoursController {
     private readonly deleteOpeningHours: DeleteOpeningHoursUseCase
   ) {}
 
-  @Post()
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles("admin")
-  @ApiBody({ type: CreateOpeningHoursRequestDto })
-  @ApiCreatedResponse({ type: CreateOpeningHoursResponseDto })
-  async create(@Body() body: CreateOpeningHoursRequestDto): Promise<CreateOpeningHoursResponseDto> {
-    return this.createOpeningHours.execute(body);
-  }
-
   @Get("cinema/:cinemaId")
   @ApiParam({ name: "cinemaId", type: String })
   @ApiOkResponse({ type: [OpeningHoursResponseDto] })
@@ -44,9 +35,18 @@ export class OpeningHoursController {
     return result.openingHours;
   }
 
+  @Post()
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles("ADMIN")
+  @ApiBody({ type: CreateOpeningHoursRequestDto })
+  @ApiCreatedResponse({ type: CreateOpeningHoursResponseDto })
+  async create(@Body() body: CreateOpeningHoursRequestDto): Promise<CreateOpeningHoursResponseDto> {
+    return this.createOpeningHours.execute(body);
+  }
+  
   @Patch(":id")
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles("admin")
+  @Roles("ADMIN")
   @ApiParam({ name: "id", type: String })
   @ApiOkResponse({ type: UpdateOpeningHoursResponseDto })
   async update(
@@ -58,7 +58,7 @@ export class OpeningHoursController {
 
   @Delete(":id")
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles("admin")
+  @Roles("ADMIN")
   @ApiParam({ name: "id", type: String })
   @ApiOkResponse({ type: DeleteOpeningHoursResponseDto })
   async remove(@Param("id") id: string): Promise<DeleteOpeningHoursResponseDto> {
